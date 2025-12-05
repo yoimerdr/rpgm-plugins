@@ -20,6 +20,9 @@
       ],
       "@core-plugin/*": [
         "./src/plugins/core/*"
+      ],
+      "@languages-plugin/*": [
+        "./src/plugins/languages/*"
       ]
     }
   },
