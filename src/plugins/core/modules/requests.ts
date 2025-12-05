@@ -5,24 +5,81 @@ import {keach} from "@jstls/core/iterable/each";
 import {KeyableObject} from "@jstls/types/core/objects";
 import {assign2} from "@jstls/core/objects/factory";
 
+/**
+ * Callback function invoked when a request loads successfully.
+ * @param request The XMLHttpRequest object.
+ */
 export type OnLoadRequest = (request: XMLHttpRequest) => void;
+
+/**
+ * Callback function invoked when a request encounters an error.
+ * @param request The XMLHttpRequest object.
+ */
 export type OnErrorRequest = (request: XMLHttpRequest) => void;
+
+/**
+ * Options for making a request, extending RequestInit with optional responseType.
+ */
 export type RequestOptions = RequestInit & { responseType?: XMLHttpRequestResponseType };
+
+/**
+ * Callback function invoked when a JSON request loads successfully.
+ * @param data The parsed JSON data.
+ * @param request The XMLHttpRequest object.
+ */
 export type OnLoadJsonRequest<T> = (data: T, request: XMLHttpRequest) => void;
 
+/**
+ * Handler for managing request callbacks.
+ */
 export interface RequestHandler {
+  /**
+   * Sets the load callback.
+   * @param callback The callback to invoke on load.
+   * @returns This handler for chaining.
+   */
   onLoad(callback: OnLoadRequest): RequestHandler;
 
+  /**
+   * Sets the error callback.
+   * @param callback The callback to invoke on error.
+   * @returns This handler for chaining.
+   */
   onError(callback: OnErrorRequest): RequestHandler;
 
+  /**
+   * Sets both load and error callbacks.
+   * @param onLoad The callback to invoke on load.
+   * @param onError The callback to invoke on error.
+   * @returns This handler for chaining.
+   */
   then(onLoad: OnLoadRequest, onError?: OnErrorRequest): RequestHandler;
 }
 
+/**
+ * Handler for managing JSON request callbacks.
+ */
 export interface RequestJsonHandler<T> {
+  /**
+   * Sets the load callback for JSON data.
+   * @param callback The callback to invoke on load with parsed data.
+   * @returns This handler for chaining.
+   */
   onLoad(callback: OnLoadJsonRequest<T>): RequestJsonHandler<T>;
 
+  /**
+   * Sets the error callback.
+   * @param callback The callback to invoke on error.
+   * @returns This handler for chaining.
+   */
   onError(callback: OnErrorRequest): RequestJsonHandler<T>;
 
+  /**
+   * Sets both load and error callbacks for JSON data.
+   * @param onLoad The callback to invoke on load with parsed data.
+   * @param onError The callback to invoke on error.
+   * @returns This handler for chaining.
+   */
   then(onLoad: OnLoadJsonRequest<T>, onError?: OnErrorRequest): RequestJsonHandler<T>;
 }
 
@@ -57,11 +114,11 @@ function createHandler(): any {
 /**
  * Fetches a resource and parses the response as JSON.
  *
- * Automatically handles the `Content-Type` header to determine if the response should be parsed as JSON.
+ * Forces the response type to JSON and sets the Content-Type header to 'application/json'.
  *
  * @param url The URL to fetch.
  * @param init The fetch options.
- * @returns A promise that resolves to the parsed JSON.
+ * @returns A RequestJsonHandler for managing callbacks.
  */
 export function fetchJson<T = any>(url: string, init?: RequestOptions): RequestJsonHandler<T> {
 
