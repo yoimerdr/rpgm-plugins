@@ -23,6 +23,7 @@ import {keys, prototype} from "@jstls/core/shortcuts/object";
 import {name} from "@jstls/core/functions";
 import {uid} from "@jstls/core/polyfills/symbol";
 import {simple} from "@jstls/core/definer/getters/builders";
+import {setWindowPolyfill} from "@core-plugin/modules/polyfills";
 
 /**
  * Defines a property on an object.
@@ -84,7 +85,9 @@ export interface CoreProperties {
 
   uid: typeof uid,
 
-  getprop: typeof simple
+  getprop: typeof simple,
+
+  addWindowPolyfill: typeof setWindowPolyfill,
 }
 
 /**
@@ -111,5 +114,6 @@ export const properties: CoreProperties = {
   getters,
   funname: name,
   uid,
-  getprop: simple
+  getprop: simple,
+  addWindowPolyfill: setWindowPolyfill
 }
