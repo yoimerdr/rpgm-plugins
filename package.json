@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "main": "ts-node src/index.ts"
+    "main": "ts-node src/index.ts",
+    "build:core": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/core.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:core": "npm run build:core -- -w"
   },
   "devDependencies": {
     "tsconfig-paths": "^4.2.0",
