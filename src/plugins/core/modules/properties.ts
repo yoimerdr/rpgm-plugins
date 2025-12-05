@@ -21,6 +21,8 @@ import {KeyableObject} from "@jstls/types/core/objects";
 import {property} from "@jstls/core/objects/handlers/builder";
 import {keys, prototype} from "@jstls/core/shortcuts/object";
 import {name} from "@jstls/core/functions";
+import {uid} from "@jstls/core/polyfills/symbol";
+import {simple} from "@jstls/core/definer/getters/builders";
 
 /**
  * Defines a property on an object.
@@ -78,7 +80,11 @@ export interface CoreProperties {
   getter: typeof getter,
   getters: typeof getters,
 
-  funname: typeof name
+  funname: typeof name,
+
+  uid: typeof uid,
+
+  getprop: typeof simple
 }
 
 /**
@@ -103,5 +109,7 @@ export const properties: CoreProperties = {
   writeables,
   getter,
   getters,
-  funname: name
+  funname: name,
+  uid,
+  getprop: simple
 }
