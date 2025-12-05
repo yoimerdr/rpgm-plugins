@@ -62,10 +62,6 @@ export function fetchRequest(input: string | URL, init?: RequestOptions): Promis
 
   init && setTo(init, assignKeys, options);
 
-  keach(options.headers, function (value, key) {
-    xhr.setRequestHeader(key as string, value);
-  });
-
   const {headers, responseType} = options,
     mimeType = headers["Content-Type"] || headers["content-type"];
 
@@ -73,6 +69,11 @@ export function fetchRequest(input: string | URL, init?: RequestOptions): Promis
   responseType && (xhr.responseType = responseType);
 
   xhr.open(options.method, options.url, true);
+
+  keach(options.headers, function (value, key) {
+    xhr.setRequestHeader(key as string, value);
+  });
+
   xhr.send(options.body);
 
   return new requests.Promise((resolve, reject) => {
