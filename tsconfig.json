@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "es5",
+      "dom"
+    ],
+    "moduleResolution": "node10",
+//    "module": "preserve",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "alwaysStrict": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@jstls/*": [
+        "./lib/jstls/src/*"
+      ],
+      "@core-plugin/*": [
+        "./src/plugins/core/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "lib"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  }
+}
