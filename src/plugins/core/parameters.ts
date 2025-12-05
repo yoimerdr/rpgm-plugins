@@ -1,7 +1,6 @@
 import {win} from "@jstls/components/shared/constants";
 import {isDefined, isFunction} from "@jstls/core/objects/types";
-import {get2, set2} from "@jstls/core/objects/handlers/getset";
-import {boolParameter} from "@core-plugin/modules/parameters";
+import {get2} from "@jstls/core/objects/handlers/getset";
 import {assign2} from "@jstls/core/objects/factory";
 import {define} from "@core-plugin/modules/properties";
 import {descriptor} from "@jstls/core/definer/shared";
@@ -19,14 +18,10 @@ export type PolyfillMode = "auto" | "include" | "exclude";
  * The plugin parameters.
  *
  * Defines the configuration options available for the plugin.
- * These parameters control various aspects of the plugin's behavior, such as polyfill inclusion.
+ * These parameters control various aspects of the plugin's behavior.
  */
 export interface Parameters {
-  polyfills: boolean;
-  promise: PolyfillMode;
-  headers: PolyfillMode;
-  response: PolyfillMode;
-  fetch: PolyfillMode;
+
 }
 
 /**
@@ -54,18 +49,7 @@ export function setParameterPolyfill(mode: PolyfillMode, name: string, polyfill:
 /** Set up the plugin parameters
  * */
 export function setupParameters() {
-  const params = PluginManager.parameters(PluginName) || {
-    polyfills: true,
-    response: "auto",
-    fetch: "auto",
-    headers: "auto",
-    promise: "auto"
-  } as Parameters;
+  const params = PluginManager.parameters(PluginName) || {} as Parameters;
 
   assign2(parameters, params);
-  set2(
-    parameters,
-    "polyfills",
-    boolParameter(params.polyfills || "true")
-  )
 }
