@@ -8,13 +8,13 @@ providing essential utilities, polyfills, and advanced features to streamline ga
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/rpgm-plugins.git
+   git clone https://github.com/yoimerdr/rpgm-plugins.git
    cd rpgm-plugins
    ```
 
 2. Clone the dependency:
    ```
-   git clone https://github.com/yourusername/jstls.git lib/jstls
+   git clone https://github.com/yoimerdr/jstls.git lib/jstls
    ```
 
 3. Install dependencies:
