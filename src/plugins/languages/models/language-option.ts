@@ -1,11 +1,11 @@
 import {WithPrototype} from "@jstls/types/core/objects";
 import {funclass, partialMethod} from "@languages-plugin/shortcuts/cls";
 import {isObject} from "@languages-plugin/shortcuts/validations";
-import {readonlys2} from "@languages-plugin/shortcuts/properties";
-import {concat, string} from "@languages-plugin/shortcuts/mappers";
-import {simple} from "@jstls/core/definer/getters/builders";
+import {getprop, readonlys2} from "@languages-plugin/shortcuts/properties";
+import {concat, setTo, string} from "@languages-plugin/shortcuts/mappers";
 import {join} from "@languages-plugin/shortcuts/env/path";
 import {JsonSerializable} from "@languages-plugin/lib";
+import {rawExtensions} from "@languages-plugin/shortcuts/images";
 
 export interface LanguageOption extends JsonSerializable {
   readonly code: string;
@@ -25,7 +25,7 @@ export interface LanguageOptionConstructor extends WithPrototype<LanguageOption>
   new(source?: LanguageOption): LanguageOption
 }
 
-const getCode = partialMethod(simple<LanguageOption>, "code");
+const getCode = partialMethod(getprop<LanguageOption>, "code");
 
 export function suffixTo(language: LanguageOption, text?: string): string {
   return concat(string(text), "_", language.code);
@@ -36,7 +36,7 @@ export function jsonFilename(language: LanguageOption, folder?: string): string 
 }
 
 export function imageExtensions(language: LanguageOption): string[] {
-  return [".png"].map(function (ext) {
+  return rawExtensions.map(function (ext) {
     return suffixTo(language) + ext;
   });
 }
@@ -64,8 +64,7 @@ export const LanguageOption: LanguageOptionConstructor = funclass({
       return this.code === other.code;
     },
     toJSON() {
-      const $this = this;
-      return {code: $this.code, name: $this.name, label: $this.label};
+      return setTo(this, ["code", "name", "label"], {})
     }
   }
 })

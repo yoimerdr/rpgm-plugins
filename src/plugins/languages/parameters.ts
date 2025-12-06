@@ -1,11 +1,11 @@
 import {assign} from "./shortcuts/properties";
 import {concat, get2, set2} from "./shortcuts/mappers";
-import {boolParameter} from "@core-plugin/modules/parameters";
 import {each} from "./shortcuts/iterables";
 import {getIf, returns} from "./shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 import {LanguageOption} from "./models/language-option";
 import {join} from "@languages-plugin/shortcuts/env/path";
+import {bool} from "@languages-plugin/shortcuts/parameters";
 
 export type GenerateLanguageMode = "auto" | "always" | "none";
 
@@ -70,7 +70,7 @@ export function setupParameters() {
     set2(
       parameters,
       key,
-      boolParameter(get2(params, key) || "true")
+      bool(get2(params, key) || "true")
     )
   })
 
