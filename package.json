@@ -5,7 +5,11 @@
   "scripts": {
     "main": "ts-node src/index.ts",
     "build:core": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/core.config.mjs --configPlugin typescript --bundleConfigAsCjs",
-    "watch:core": "npm run build:core -- -w"
+    "watch:core": "npm run build:core -- -w",
+    "build:languages": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/languages.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:languages": "npm run build:languages -- -w",
+    "build:languages-light": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/languages.light.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:languages-light": "npm run build:languages-light -- -w"
   },
   "devDependencies": {
     "tsconfig-paths": "^4.2.0",
