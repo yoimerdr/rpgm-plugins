@@ -13,5 +13,8 @@ export const {
   descriptor,
   descriptor2,
   writeable,
-  funname
+  funname,
+  uid,
+  getters,
+  getprop
 } = YDP_Core.properties;
