@@ -14,6 +14,7 @@ import {CoreEnvironment, env} from "./modules/env/index";
 import {CoreImages, images} from "@core-plugin/modules/images";
 import {readonly2} from "@jstls/core/definer";
 import {PluginName, setupParameters} from "@core-plugin/parameters";
+import {CoreFunctions, functions} from "@core-plugin/modules/functions";
 
 declare const exports: KeyableObject
 
@@ -98,6 +99,9 @@ export interface YDPCore {
    * extensions, and handling different image formats.
    */
   images: CoreImages,
+
+  functions: CoreFunctions,
+
   /**
    * The unique name of the plugin.
    *
@@ -122,5 +126,6 @@ export {
   iterables,
   mappers,
   env,
-  images
+  images,
+  functions
 }

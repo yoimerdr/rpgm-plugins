@@ -1,54 +1,92 @@
-import {fetch as polyfillFetch} from "@jstls/core/polyfills/fetch";
-import {parameters, setParameterPolyfill} from "@core-plugin/parameters";
-import {HeadersPolyfill} from "@jstls/core/polyfills/fetch/headers";
-import {Promise as PromisePolyfill} from "@jstls/core/polyfills/promise";
-import {ResponsePolyfill} from "@jstls/core/polyfills/fetch/response";
+import {nullable} from "@jstls/core/utils/types";
+import {setTo} from "@jstls/core/objects/handlers/getset";
+import {string} from "@jstls/core/objects/handlers";
+import {keach} from "@jstls/core/iterable/each";
+import {KeyableObject} from "@jstls/types/core/objects";
+import {assign2} from "@jstls/core/objects/factory";
+import {Promise} from "@jstls/core/polyfills/promise";
+import {IllegalArgumentError} from "@jstls/core/exceptions";
+import {isString} from "@jstls/core/objects/types";
 
-if (parameters.polyfills) {
-  setParameterPolyfill(
-    parameters.fetch,
-    "fetch",
-    polyfillFetch
-  );
-
-  setParameterPolyfill(
-    parameters.headers,
-    "Headers",
-    HeadersPolyfill
-  )
-
-  setParameterPolyfill(
-    parameters.response,
-    "Response",
-    ResponsePolyfill
-  )
-
-  setParameterPolyfill(
-    parameters.promise,
-    "Promise",
-    PromisePolyfill
-  )
-}
-
+/**
+ * Options for making a request, extending RequestInit with optional responseType.
+ */
+export type RequestOptions = RequestInit & { responseType?: XMLHttpRequestResponseType };
 
 /**
  * Fetches a resource and parses the response as JSON.
  *
- * Automatically handles the `Content-Type` header to determine if the response should be parsed as JSON.
+ * Forces the response type to JSON and sets the Content-Type header to 'application/json'.
  *
  * @param url The URL to fetch.
  * @param init The fetch options.
- * @returns A promise that resolves to the parsed JSON.
+ * @returns A RequestJsonHandler for managing callbacks.
  */
-export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T> {
-  return fetch(url, init)
-    .then(res => {
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.startsWith('application/json'))
-        return res.text()
-          .then(text => JSON.parse(text))
-      return res.json()
-    }) as Promise<T>
+export function fetchJson<T = any>(url: string, init?: RequestOptions): Promise<T> {
+  const options: RequestOptions = assign2({} as RequestOptions, init!),
+    headers = assign2({}, options.headers!);
+
+  assign2(options, {
+    responseType: "json",
+    headers
+  });
+
+  assign2(headers, {
+    "Content-Type": "application/json",
+  });
+
+  return fetchRequest(url, options)
+    .then(
+      function (xhr) {
+        if (xhr.status >= 400)
+          throw new IllegalArgumentError("Unexpected response status: " + xhr.status);
+
+        const {response} = xhr;
+        return isString(response) ? JSON.parse(response) : response;
+      }
+    )
+}
+
+export function fetchRequest(input: string | URL, init?: RequestOptions): Promise<XMLHttpRequest> {
+  if (typeof XMLHttpRequest === "undefined")
+    throw new ReferenceError('This fetch polyfills requires XMLHttpRequest. You must call this on the browser.');
+
+  input = string(input);
+  const xhr = new XMLHttpRequest(),
+    options = {
+      url: input,
+      method: "GET",
+      headers: <Record<string, any>>{},
+      body: <ReadableStream<Uint8Array> | null | BodyInit>nullable
+    } as KeyableObject;
+
+  const assignKeys: any[] = ["url", "method", "headers"];
+
+  init && setTo(init, assignKeys, options);
+
+  const {headers, responseType} = options,
+    mimeType = headers["Content-Type"] || headers["content-type"];
+
+  mimeType && xhr.overrideMimeType(mimeType);
+  responseType && (xhr.responseType = responseType);
+
+  xhr.open(options.method, options.url, true);
+
+  keach(options.headers, function (value, key) {
+    xhr.setRequestHeader(key as string, value);
+  });
+
+  xhr.send(options.body);
+
+  return new requests.Promise((resolve, reject) => {
+    xhr.onload = function () {
+      resolve(this)
+    }
+
+    xhr.onerror = function () {
+      reject(this)
+    }
+  });
 }
 
 /**
@@ -59,8 +97,9 @@ export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T> 
  * for automatically parsing JSON responses, handling content types appropriately.
  */
 export interface CoreRequests {
-  fetch: typeof fetch;
+  fetch: typeof fetchRequest;
   fetchJson: typeof fetchJson;
+  Promise: typeof Promise;
 }
 
 
@@ -68,7 +107,7 @@ export interface CoreRequests {
  * The core requests module instance.
  */
 export const requests: CoreRequests = {
-  fetch,
-  fetchJson
+  fetch: fetchRequest,
+  fetchJson,
+  Promise
 }
-

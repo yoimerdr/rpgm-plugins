@@ -21,6 +21,33 @@ import {KeyableObject} from "@jstls/types/core/objects";
 import {property} from "@jstls/core/objects/handlers/builder";
 import {keys, prototype} from "@jstls/core/shortcuts/object";
 import {name} from "@jstls/core/functions";
+import {uid} from "@jstls/core/polyfills/symbol";
+import {simple} from "@jstls/core/definer/getters/builders";
+import {isFunction} from "@jstls/core/objects/types";
+import {get2} from "@jstls/core/objects/handlers/getset";
+import {win} from "@jstls/components/shared/constants";
+
+/**
+ * The polyfill inclusion mode.
+ *
+ * - `auto`: Automatically determine if the polyfill is needed.
+ * - `include`: Force inclusion of the polyfill.
+ * - `exclude`: Force exclusion of the polyfill.
+ */
+export type PolyfillMode = "auto" | "include" | "exclude";
+
+/**
+ * Sets a polyfill on `window` object based on the provided mode and availability.
+ *
+ * @param mode The polyfill mode (`auto`, `include`, `exclude`).
+ * @param name The name of the property to polyfill on the global object.
+ * @param polyfill The polyfill implementation.
+ */
+export function setWindowPolyfill(mode: PolyfillMode, name: string, polyfill: any) {
+  if (mode === "include" || (mode === "auto" && !isDefined(get2(win, name)))) {
+    define(win, name, descriptor(polyfill, true, true, !isFunction(polyfill)))
+  }
+}
 
 /**
  * Defines a property on an object.
@@ -78,7 +105,13 @@ export interface CoreProperties {
   getter: typeof getter,
   getters: typeof getters,
 
-  funname: typeof name
+  funname: typeof name,
+
+  uid: typeof uid,
+
+  getprop: typeof simple,
+
+  addWindowPolyfill: typeof setWindowPolyfill,
 }
 
 /**
@@ -103,5 +136,8 @@ export const properties: CoreProperties = {
   writeables,
   getter,
   getters,
-  funname: name
+  funname: name,
+  uid,
+  getprop: simple,
+  addWindowPolyfill: setWindowPolyfill
 }
