@@ -6,6 +6,7 @@ import {KeyableObject} from "@jstls/types/core/objects";
 import {assign2} from "@jstls/core/objects/factory";
 import {Promise} from "@jstls/core/polyfills/promise";
 import {IllegalArgumentError} from "@jstls/core/exceptions";
+import {isString} from "@jstls/core/objects/types";
 
 /**
  * Options for making a request, extending RequestInit with optional responseType.
@@ -40,7 +41,8 @@ export function fetchJson<T = any>(url: string, init?: RequestOptions): Promise<
         if (xhr.status >= 400)
           throw new IllegalArgumentError("Unexpected response status: " + xhr.status);
 
-        return xhr.response;
+        const {response} = xhr;
+        return isString(response) ? JSON.parse(response) : response;
       }
     )
 }
