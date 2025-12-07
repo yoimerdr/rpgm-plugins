@@ -3,7 +3,7 @@ import {NumberExtensions} from "./modules/extensions/number";
 import {StringExtensions} from "./modules/extensions/string";
 import {ArrayExtensions} from "./modules/extensions/array";
 import {StringPolyfill} from "./modules/polyfills/string";
-import {ArrayConstructorPolyfill} from "./modules/polyfills/array";
+import {ArrayConstructorPolyfill, ArrayPolyfill} from "./modules/polyfills/array";
 import {ObjectConstructorPolyfill} from "./modules/polyfills/object";
 
 declare const YDP_Core: YDPCore
@@ -18,7 +18,7 @@ declare global {
 
   }
 
-  interface Array<T> extends ArrayExtensions<T> {
+  interface Array<T> extends ArrayExtensions<T>, ArrayPolyfill<T> {
 
   }
 
