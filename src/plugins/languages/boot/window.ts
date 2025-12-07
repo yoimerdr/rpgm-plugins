@@ -2,8 +2,12 @@ import {getPrototype} from "@languages-plugin/shortcuts/properties";
 import {extendMethods} from "@languages-plugin/shortcuts/cls";
 import {handler} from "@languages-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
+import {parameters} from "@languages-plugin/parameters";
 
 export function applyWindow() {
+  if(!parameters.enableCustom)
+    return;
+
   // text options
   extendMethods(
     getPrototype(Window_Base),

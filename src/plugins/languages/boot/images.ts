@@ -2,8 +2,12 @@ import {extendMethod} from "@languages-plugin/shortcuts/cls";
 import {getPrototype} from "@languages-plugin/shortcuts/properties";
 import {handler} from "@languages-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
+import {parameters} from "@languages-plugin/parameters";
 
 export function applyImages() {
+  if (!parameters.enableImages)
+    return;
+
   // Bitmaps and images
   extendMethod(
     ImageManager,
