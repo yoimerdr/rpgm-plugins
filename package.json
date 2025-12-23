@@ -5,7 +5,9 @@
   "scripts": {
     "main": "ts-node src/index.ts",
     "build:core": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/core.config.mjs --configPlugin typescript --bundleConfigAsCjs",
-    "watch:core": "npm run build:core -- -w"
+    "watch:core": "npm run build:core -- -w",
+    "build:ludens": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/ludens.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:ludens": "npm run build:ludens -- -w"
   },
   "devDependencies": {
     "tsconfig-paths": "^4.2.0",
