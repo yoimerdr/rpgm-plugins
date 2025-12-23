@@ -20,6 +20,9 @@
       ],
       "@core-plugin/*": [
         "./src/plugins/core/*"
+      ],
+      "@ludens-plugin/*": [
+        "./src/plugins/ludens/*"
       ]
     }
   },
