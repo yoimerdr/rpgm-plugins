@@ -51,12 +51,14 @@ jobs:
       # 4. Build the Specific Module
       - name: Build Module
         run: |
-          cd .build
           echo "Building ${{ steps.extract.outputs.module }}..."
           
           # We assume the build command outputs the files into a 'dist' folder relative to the execution context.
           # Since the runner is clean, only the artifacts for this module will exist there.
-          pnpm exec rollup -c ${{ steps.extract.outputs.module }}.config.mjs --configPlugin typescript --bundleConfigAsCjs
+          node .build/node_modules/rollup/dist/bin/rollup \
+            -c .build/${{ steps.extract.outputs.module }}.config.mjs \
+            --configPlugin typescript \
+            --bundleConfigAsCjs
 
       # 5. Create Version Release
       - name: Create Version Release
