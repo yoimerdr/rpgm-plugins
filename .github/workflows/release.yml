@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Clone jstls Repository
+        run: |
+            # Creates the 'lib' folder by cloning the repo into it
+          git clone https://github.com/yoimerdr/jstls.git lib/jstls
+
       # 1. Setup PNPM
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -69,7 +74,9 @@ jobs:
 
           # CHANGE: Use a wildcard (*.js) to match ANY JavaScript file generated in the output folder.
           # This handles prefixes like 'ydp_', 'v2_', or standard names automatically.
-          files: .build/dist/*.js
+          files: |
+            dist/*.js
+            dist/*.d.ts
 
           draft: false
           prerelease: false
@@ -93,7 +100,9 @@ jobs:
           name: ${{ steps.extract.outputs.module }} (Latest)
 
           # CHANGE: Same wildcard here to ensure the latest link points to the correct file(s).
-          files: .build/dist/*.js
+          files: |
+            dist/*.js
+            dist/*.d.ts
 
           draft: false
           prerelease: false
