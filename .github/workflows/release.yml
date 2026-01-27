@@ -16,7 +16,7 @@ jobs:
 
       - name: Clone jstls Repository
         run: |
-            # Creates the 'lib' folder by cloning the repo into it
+          # Creates the 'lib' folder by cloning the repo into it
           git clone https://github.com/yoimerdr/jstls.git lib/jstls
 
       # 1. Setup PNPM
