@@ -75,8 +75,8 @@ jobs:
           # CHANGE: Use a wildcard (*.js) to match ANY JavaScript file generated in the output folder.
           # This handles prefixes like 'ydp_', 'v2_', or standard names automatically.
           files: |
-            dist/*.js
-            dist/*.d.ts
+            dist/**/*.js
+            dist/**/*.d.ts
 
           draft: false
           prerelease: false
@@ -101,8 +101,8 @@ jobs:
 
           # CHANGE: Same wildcard here to ensure the latest link points to the correct file(s).
           files: |
-            dist/*.js
-            dist/*.d.ts
+            dist/**/*.js
+            dist/**/*.d.ts
 
           draft: false
           prerelease: false
