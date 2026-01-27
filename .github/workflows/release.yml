@@ -18,31 +18,26 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.8.0 # Ensure this matches your local pnpm version
+          version: 10.8.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-          # Important: Point to the lockfile inside the .build folder for caching to work
           cache-dependency-path: '.build/pnpm-lock.yaml'
 
-      # 2. Extract Module Name and Version from Tag
+      # 2. Extract Tag Info
       - name: Extract Tag Info
         id: extract
         run: |
-          # The tag comes in as "module@1.0.0"
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          
-          # Split by "@" to get module name and version
           MODULE_NAME=$(echo $TAG_NAME | cut -d'@' -f1)
           VERSION=$(echo $TAG_NAME | cut -d'@' -f2)
           
           echo "Processing Module: $MODULE_NAME"
           echo "Version: $VERSION"
 
-          # Export variables for next steps
           echo "module=$MODULE_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "full_tag=$TAG_NAME" >> $GITHUB_OUTPUT
@@ -51,14 +46,42 @@ jobs:
       - name: Install Build Dependencies
         run: |
           cd .build
-          # Use frozen-lockfile to ensure exact versions are installed (requires pnpm-lock.yaml in repo)
           pnpm install --frozen-lockfile
 
       # 4. Build the Specific Module
-      # YOU MUST ADJUST THE COMMAND BELOW TO MATCH YOUR BUILD TOOL (Rollup, Esbuild, etc.)
       - name: Build Module
         run: |
+          cd .build
           echo "Building ${{ steps.extract.outputs.module }}..."
           
-          # Example command assuming you run rollup from root using the config in .build:
-          npx rollup -c .build/${{ steps.extract.outputs.module }}.config.mjs --configPlugin typescript --bundleConfigAsCjs
+          # We assume the build command outputs the files into a 'dist' folder relative to the execution context.
+          # Since the runner is clean, only the artifacts for this module will exist there.
+          pnpm exec rollup -c ${{ steps.extract.outputs.module }}.config.mjs --configPlugin typescript --bundleConfigAsCjs
+
+      # 5. Create Version Release
+      - name: Create Version Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.extract.outputs.full_tag }}
+          name: ${{ steps.extract.outputs.module }} v${{ steps.extract.outputs.version }}
+
+          # CHANGE: Use a wildcard (*.js) to match ANY JavaScript file generated in the output folder.
+          # This handles prefixes like 'ydp_', 'v2_', or standard names automatically.
+          files: .build/dist/*.js
+
+          draft: false
+          prerelease: false
+
+      # 6. Update Floating Tag (Latest)
+      - name: Update Floating Tag (Latest)
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.extract.outputs.module }}-latest
+          name: ${{ steps.extract.outputs.module }} (Latest)
+
+          # CHANGE: Same wildcard here to ensure the latest link points to the correct file(s).
+          files: .build/dist/*.js
+
+          draft: false
+          prerelease: false
+          make_latest: false
