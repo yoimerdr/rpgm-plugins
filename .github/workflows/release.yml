@@ -1,0 +1,64 @@
+name: Module Release
+
+on:
+  push:
+    tags:
+      - '*@*' # Triggers only if the tag matches the format "module@1.0.0"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create releases and update floating tags
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Setup PNPM
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0 # Ensure this matches your local pnpm version
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          # Important: Point to the lockfile inside the .build folder for caching to work
+          cache-dependency-path: '.build/pnpm-lock.yaml'
+
+      # 2. Extract Module Name and Version from Tag
+      - name: Extract Tag Info
+        id: extract
+        run: |
+          # The tag comes in as "module@1.0.0"
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          
+          # Split by "@" to get module name and version
+          MODULE_NAME=$(echo $TAG_NAME | cut -d'@' -f1)
+          VERSION=$(echo $TAG_NAME | cut -d'@' -f2)
+          
+          echo "Processing Module: $MODULE_NAME"
+          echo "Version: $VERSION"
+
+          # Export variables for next steps
+          echo "module=$MODULE_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "full_tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      # 3. Install Build Dependencies
+      - name: Install Build Dependencies
+        run: |
+          cd .build
+          # Use frozen-lockfile to ensure exact versions are installed (requires pnpm-lock.yaml in repo)
+          pnpm install --frozen-lockfile
+
+      # 4. Build the Specific Module
+      # YOU MUST ADJUST THE COMMAND BELOW TO MATCH YOUR BUILD TOOL (Rollup, Esbuild, etc.)
+      - name: Build Module
+        run: |
+          echo "Building ${{ steps.extract.outputs.module }}..."
+          
+          # Example command assuming you run rollup from root using the config in .build:
+          npx rollup -c .build/${{ steps.extract.outputs.module }}.config.mjs --configPlugin typescript --bundleConfigAsCjs
