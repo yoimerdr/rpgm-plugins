@@ -44,6 +44,14 @@ The Core plugin provides essential utilities to simplify plugin development for 
 
 See more about [here](/src/plugins/core/README.md)
 
+### Ludens Plugin (YDP_Ludens)
+
+Bridge plugin between games and the Ludens mobile client. Required for certain features.
+
+- [Documentation](/src/plugins/ludens/README.md)
+- [Changelog](/src/plugins/ludens/CHANGELOG.md)
+- [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/ludens-latest)
+
 ## Contributing
 
 To add a new plugin:
