@@ -1,8 +1,9 @@
-import {typesConfig, varConfig} from "./base-config.mjs";
+import { typesConfig, varConfig } from "./base-config.mjs";
 import path from "path";
 
 
 const distFolder = `dist/plugins`,
+  distLightFolder = `dist/plugins/light`,
   sourceFolder = "src/plugins/languages";
 
 
@@ -20,6 +21,27 @@ export default [
   typesConfig(
     `${sourceFolder}/types.ts`,
     `${distFolder}/YDP_Languages.d.ts`,
+    'YDP_Languages',
+    [
+      {
+        find: "@languages-plugin",
+        replacement: path.resolve("./src/plugins/languages")
+      }
+    ]
+  ),
+  varConfig(
+    `${sourceFolder}/index.light.ts`,
+    `${distLightFolder}/YDP_Languages.js`,
+    'YDP_Languages',
+    `${sourceFolder}/banner.light.js`,
+    ["@core-plugin"],
+    {
+      "@core-plugin": "YDP_Core"
+    }
+  ),
+  typesConfig(
+    `${sourceFolder}/types.ts`,
+    `${distLightFolder}/YDP_Languages.d.ts`,
     'YDP_Languages',
     [
       {
