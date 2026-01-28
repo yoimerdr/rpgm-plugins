@@ -9,9 +9,10 @@ import {applyMap} from "@languages-plugin/boot/map";
 import {applyFullBoot, applyLiteBoot} from "@languages-plugin/boot/scene";
 
 function applyBasePlugin() {
+  setpath(join("log", PluginName, "languages.log"));
+
   // setup parameters
   setupParameters();
-  setpath(join("log", PluginName, "languages.log"));
 
   applyConfig();
 

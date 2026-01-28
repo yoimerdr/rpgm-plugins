@@ -9,14 +9,13 @@ import {
   LanguageOption,
   suffixTo
 } from "@languages-plugin/models/language-option";
-import {createLanguageSource} from "@languages-plugin/mappers/source";
+import {createCustomTexts, createLanguageSource} from "@languages-plugin/mappers/source";
 import {each} from "@languages-plugin/shortcuts/iterables";
-import {isNumber, isObject} from "@languages-plugin/shortcuts/validations";
+import {isNumber} from "@languages-plugin/shortcuts/validations";
 import {indefinite} from "@jstls/core/utils/types";
 import {loadMapCommands, loadMapFile} from "@languages-plugin/files/map";
 import {mapToTransform} from "@languages-plugin/mappers/map";
-import {append} from "@languages-plugin/shortcuts/env/logger";
-import {concat, set2, setobj, string} from "@languages-plugin/shortcuts/mappers";
+import {concat, set2, setobj} from "@languages-plugin/shortcuts/mappers";
 import {list} from "@languages-plugin/shortcuts/images";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 
@@ -77,20 +76,6 @@ function loadLanguageImages(source: LanguageSource, language: LanguageOption, im
   }
 }
 
-function loadLanguageCustom(source: LanguageSource, filename: string, manager: FileManager) {
-  let file: LanguageSource = <LanguageSource>{};
-
-  try {
-    file = JSON.parse(manager.readFileSync(filename));
-  } catch (e) {
-    append(string(e))
-    return;
-  }
-
-  if (file && isObject(file.custom))
-    source.custom = file.custom;
-}
-
 export function generateLanguageFiles() {
   if (!Utils.isNwjs() || !Utils.isOptionValid("test") || parameters.generationMode === "none")
     return;
@@ -107,7 +92,13 @@ export function generateLanguageFiles() {
   if (parameters.enableImages)
     images.extends(list("img", manager)) // load the project images
 
+  if (parameters.enableCustom && parameters.customTarget == "all")
+    source.custom = createCustomTexts()!;
+
   manager.writeFileSync(filename, JSON.stringify(source));
+
+  if (parameters.enableCustom && parameters.customTarget != "all")
+    source.custom = createCustomTexts()!;
 
   each(
     parameters.languages,
@@ -116,7 +107,6 @@ export function generateLanguageFiles() {
       if (language.equals(DefaultLanguage))
         return;
 
-      loadLanguageCustom(source, filename, manager)
       loadLanguageImages(source, language, images)
 
       manager.writeFileSync(filename, JSON.stringify(source));

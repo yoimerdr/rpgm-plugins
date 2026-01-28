@@ -16,6 +16,17 @@
 * @desc The text shown in the options menu.
 * @default Language
 */
+/*~struct~CustomText:
+* @param option
+* @text Game options/commands
+* @type string[]
+* @param status
+* @text Status values
+* @type string[]
+* @param text
+* @text General purpose texts
+* @type string[]
+* */
 /*:
  * @plugindesc
  * A plugin for game localization. Allows text translation via JSON files, automatic text extraction, and dynamic image switching.
@@ -97,7 +108,23 @@
  * @text Enable Custom Texts
  * @type boolean
  * @desc Enable translations for texts that cannot be extracted automatically (e.g. dynamic show texts).
- * @default true
+ * @default false
+ *
+ * @param customTexts
+ * @text Custom Texts
+ * @type struct<CustomText>
+ * @desc Custom texts to be translated.
+ * @parent enableCustom
+ * @default {"option":"[\"Save\", \"Load\", \"Cancel\", \"Delete\", \"Exit\"]", "status":"[\"On\", \"Off\"]", "text":"[\"Please select a file slot.\", \"Loads the data from the saved game.\"]"}
+ *
+ * @param customTargets
+ * @text Custom Targets
+ * @type combo
+ * @option no-default
+ * @option all
+ * @desc no-default: The default file will not contain the custom texts. all: All files will contain the custom texts.
+ * @default no-default
+ * @parent enableCustom
  *
  * @help
  * =============================================================================
@@ -220,4 +247,4 @@
  * =============================================================================
  */
 
-if("undefined"==typeof YDP_Core){var o="The YDP_Core plugin is necessary. See the docs on https://www.github.com/yoimerdr/rpgm-plugins";throw Scene_Boot.prototype.start=function(){throw new Error(o)},new Error(o)}
+if ("undefined" == typeof YDP_Core) { var o = "The YDP_Core plugin is necessary. See the docs on https://www.github.com/yoimerdr/rpgm-plugins"; throw Scene_Boot.prototype.start = function () { throw new Error(o) }, new Error(o) }
