@@ -160,10 +160,14 @@ const indexKey = uid("i"),
   customsKey = uid("c"),
   imagesKey = uid("i"),
   mapsKey = uid("m"),
+  setupKey = uid("s"),
   // set the methods
   handler = <PluginHandler>{
     setup() {
       loadLanguageFiles();
+      const $this = this;
+      $this.load($this.index);
+      set2($this, setupKey, true);
     },
     load: function (index) {
       const $this = this,
@@ -172,7 +176,7 @@ const indexKey = uid("i"),
         target = changeIndex(total, index),
         language = languages[target];
 
-      if (target === $this.index)
+      if (target === $this.index && get2($this, setupKey))
         return false;
 
       set2($this, indexKey, target);
