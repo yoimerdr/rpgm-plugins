@@ -5,7 +5,9 @@
   "scripts": {
     "main": "ts-node src/index.ts",
     "build:core": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/core.config.mjs --configPlugin typescript --bundleConfigAsCjs",
-    "watch:core": "npm run build:core -- -w"
+    "watch:core": "npm run build:core -- -w",
+    "build:crossimages": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/crossimages.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:crossimages": "npm run build:crossimages -- -w"
   },
   "devDependencies": {
     "tsconfig-paths": "^4.2.0",
