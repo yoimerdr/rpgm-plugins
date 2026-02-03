@@ -10,9 +10,8 @@ import {KeyableObject} from "@jstls/types/core/objects";
 import {parameters} from "@languages-plugin/parameters";
 import {Maybe} from "@jstls/types/core";
 import {indefinite} from "@jstls/core/utils/types";
-import {keach} from "@languages-plugin/shortcuts/iterables";
-import {get2, set2} from "@jstls/core/objects/handlers/getset";
-import {forEach} from "@jstls/core/shortcuts/array";
+import {each, keach} from "@languages-plugin/shortcuts/iterables";
+import {get2, set2} from "@languages-plugin/shortcuts/mappers";
 
 export function createCustomTexts(): Maybe<KeyableObject> {
   if (!parameters.enableCustom)
@@ -24,7 +23,7 @@ export function createCustomTexts(): Maybe<KeyableObject> {
     parameters.customTexts,
     function (value: string[], key) {
       set2(source, key, {});
-      forEach(value, function (item) {
+      each(value, function (item) {
         set2(get2(source, key), item, item);
       });
     }
