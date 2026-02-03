@@ -44,6 +44,15 @@ The Core plugin provides essential utilities to simplify plugin development for 
 
 See more about [here](/src/plugins/core/README.md)
 
+
+### CrossImages Plugin (YDP_CrossImages)
+
+Standardizes image paths to ensure cross-platform compatibility, fixing issues with case-sensitivity on mobile platforms.
+
+- [Documentation](/src/plugins/crossimages/README.md)
+- [Changelog](/src/plugins/crossimages/CHANGELOG.md)
+- [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/crossimages-latest)
+
 ## Contributing
 
 To add a new plugin:
