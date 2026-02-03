@@ -23,6 +23,9 @@
       ],
       "@ludens-plugin/*": [
         "./src/plugins/ludens/*"
+      ],
+      "@crossimages-plugin/*": [
+        "./src/plugins/crossimages/*"
       ]
     }
   },

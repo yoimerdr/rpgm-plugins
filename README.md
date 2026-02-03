@@ -52,6 +52,15 @@ Bridge plugin between games and the Ludens mobile client. Required for certain f
 - [Changelog](/src/plugins/ludens/CHANGELOG.md)
 - [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/ludens-latest)
 
+
+### CrossImages Plugin (YDP_CrossImages)
+
+Standardizes image paths to ensure cross-platform compatibility, fixing issues with case-sensitivity on mobile platforms.
+
+- [Documentation](/src/plugins/crossimages/README.md)
+- [Changelog](/src/plugins/crossimages/CHANGELOG.md)
+- [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/crossimages-latest)
+
 ## Contributing
 
 To add a new plugin:
