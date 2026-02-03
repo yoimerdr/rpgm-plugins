@@ -1,11 +1,11 @@
-import {DefaultLanguage, jsonFilename, LanguageOption} from "@languages-plugin/models/language-option";
+import {DefaultLanguage, jsonFilename, LanguageOption, suffixTo} from "@languages-plugin/models/language-option";
 import {assign, getprop, getters, uid, writeable} from "@languages-plugin/shortcuts/properties";
 import {parameters, PluginName} from "@languages-plugin/parameters";
 import {concat, get, get2, set2, string} from "@languages-plugin/shortcuts/mappers";
 import {each, each2} from "@languages-plugin/shortcuts/iterables";
 import {fetchJson} from "@languages-plugin/shortcuts/requests";
 import {append} from "@languages-plugin/shortcuts/env/logger";
-import {isDefined} from "@languages-plugin/shortcuts/validations";
+import {isDefined, isString} from "@languages-plugin/shortcuts/validations";
 import {actorFromTransform} from "@languages-plugin/mappers/actor";
 import {itemFromTransform} from "@languages-plugin/mappers/item";
 import {skillFromTransform} from "@languages-plugin/mappers/skill";
@@ -150,6 +150,30 @@ export function changeIndex(total: number, index: number): number {
   return index;
 }
 
+export function getImage(images: KeyableObject, folder: string, filename: string): {
+  filename: string,
+  success: boolean
+} {
+  if (!parameters.enableImages || !isDefined(images))
+    return {filename, success: !parameters.enableImages};
+
+  const folderpath = new Filepath(folder),
+    filepath = new Filepath(filename),
+    parts = folderpath.parts.concat(filepath.parts),
+    result = get.apply(
+      null,
+      concat(
+        [images],
+        parts
+      ) as any
+    );
+
+  if (isString(result))
+    return {filename: result, success: true};
+
+  return {filename: filepath.toString(), success: false};
+}
+
 // instance the uids for properties
 const indexKey = uid("i"),
   languageKey = uid("l"),
@@ -213,20 +237,33 @@ const indexKey = uid("i"),
       const $this = this,
         images = get2($this, imagesKey) as KeyableObject;
 
-      if (!parameters.enableImages || !isDefined(images))
-        return filename;
+      const {filename: result, success} = getImage(images, folder, filename);
 
-      const folderpath = new Filepath(folder),
-        filepath = new Filepath(filename),
-        parts = folderpath.parts.concat(filepath.parts);
+      if (success)
+        return result;
 
-      return get.apply(
-        null,
-        concat(
-          [images],
-          parts
-        ) as any
-      ) || parts.last();
+      const filepath = new Filepath(filename),
+        name = filepath.prefix;
+
+      for (let i = 0; i < parameters.languages.length; i++) {
+        const language = parameters.languages[i],
+          languageSuffix = suffixTo(language);
+
+        if (name.endsWith(languageSuffix)) {
+          const fixedName = name.substring(0, name.length - languageSuffix.length),
+            parent = filepath.parent,
+            suffix = filepath.suffix,
+            extension = suffix === name ? "" : suffix;
+
+          if (!language.equals($this.language)) {
+            filename = parent ? parent.join(fixedName + extension).toString() : fixedName + extension;
+          }
+
+          return filename;
+        }
+      }
+
+      return filename;
     },
     getMap(id) {
       const maps = get2(this, mapsKey) as KeyableObject<MapSource>;
