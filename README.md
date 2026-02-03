@@ -44,6 +44,14 @@ The Core plugin provides essential utilities to simplify plugin development for 
 
 See more about [here](/src/plugins/core/README.md)
 
+### Languages Plugin (YDP_Languages)
+
+A robust localization system for translating text and switching images based on the selected language.
+
+- [Documentation](/src/plugins/languages/README.md)
+- [Changelog](/src/plugins/languages/CHANGELOG.md)
+- [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/languages-latest)
+
 ## Contributing
 
 To add a new plugin:
