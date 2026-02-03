@@ -53,9 +53,13 @@ function loadDataFiles(manager: FileManager, source: LanguageSource): LanguageSo
 }
 
 function loadLanguageImages(source: LanguageSource, language: LanguageOption, images: string[],) {
-  const ext = imageExtensions(language),
+  const suffix = suffixTo(language),
     langImages = parameters.imageMode === "all" ? images :
-      images.filter(value => ext.some(it => value.endsWith(it)));
+      images.filter(value => {
+        const filepath = new Filepath(value);
+
+        return filepath.prefix.endsWith(suffix);
+      });
 
   if (langImages.isNotEmpty()) {
     source.images = {};
