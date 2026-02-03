@@ -73,6 +73,13 @@
  * @desc Allow using different images based on the selected language.
  * @default true
  *
+ * @param imagePattern
+ * @text Image Filename Pattern
+ * @type string
+ * @desc Pattern for localized image filenames. Can use <%= '${' %>filename}, <%= '${' %>code}, <%= '${' %>name}, and <%= '${' %>label} placeholders.
+ * @default <%= '${' %>filename}.<%= '${' %>code}
+ * @parent enableImages
+ *
  * @param enableCustom
  * @text Enable Custom Texts
  * @type boolean
@@ -147,7 +154,13 @@
  * Image Localization
  * =============================================================================
  * Enable "Enable Image Localization" to use different images for each language.
+ *
+ * Supported placeholders for "Image Filename Pattern":
+ * - <%= '${' %>filename}: The original filename.
+ * - <%= '${' %>code}: The language code.
+ * - <%= '${' %>name}: The language name.
+ * - <%= '${' %>label}: The language label.
  * =============================================================================
  */
 
-if("undefined"==typeof YDP_Core){var o="The YDP_Core plugin is necessary. See the docs on https://www.github.com/yoimerdr/rpgm-plugins";throw Scene_Boot.prototype.start=function(){throw new Error(o)},new Error(o)}
+if ("undefined" == typeof YDP_Core) { var o = "The YDP_Core plugin is necessary. See the docs on https://www.github.com/yoimerdr/rpgm-plugins"; throw Scene_Boot.prototype.start = function () { throw new Error(o) }, new Error(o) }

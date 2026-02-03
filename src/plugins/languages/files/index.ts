@@ -4,10 +4,8 @@ import {FileManager} from "@core-plugin/modules/env/fs";
 import {fs} from "@languages-plugin/shortcuts/env/fm";
 import {
   DefaultLanguage,
-  imageExtensions,
   jsonFilename,
   LanguageOption,
-  suffixTo
 } from "@languages-plugin/models/language-option";
 import {createCustomTexts, createLanguageSource} from "@languages-plugin/mappers/source";
 import {each} from "@languages-plugin/shortcuts/iterables";
@@ -18,6 +16,8 @@ import {mapToTransform} from "@languages-plugin/mappers/map";
 import {concat, set2, setobj} from "@languages-plugin/shortcuts/mappers";
 import {list} from "@languages-plugin/shortcuts/images";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
+import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
+import {keys} from "@jstls/core/objects/handlers/properties";
 
 export function generateLanguagesFolder() {
   (new Filepath(parameters.folder))
@@ -53,13 +53,14 @@ function loadDataFiles(manager: FileManager, source: LanguageSource): LanguageSo
 }
 
 function loadLanguageImages(source: LanguageSource, language: LanguageOption, images: string[],) {
-  const suffix = suffixTo(language),
-    langImages = parameters.imageMode === "all" ? images :
-      images.filter(value => {
-        const filepath = new Filepath(value);
+  const langImages = parameters.imageMode === "all" ? images :
+    images.filter(value => {
+      const filepath = new Filepath(value),
+        prefix = filepath.prefix,
+        result = extractFromSuffix(prefix);
 
-        return filepath.prefix.endsWith(suffix);
-      });
+      return keys(result).length > 0;
+    });
 
   if (langImages.isNotEmpty()) {
     source.images = {};
@@ -68,13 +69,14 @@ function loadLanguageImages(source: LanguageSource, language: LanguageOption, im
       const filepath = new Filepath(image),
         name = filepath.prefix,
         parent = filepath.parent,
-        parts = parent ? parent.parts : [];
+        parts = parent ? parent.parts : [],
+        patterns = extractFromSuffix(name);
 
       setobj.apply(
         undefined, <any>concat
         ([source.images],
           parts,
-          [name.replace(suffixTo(language), ""), name]
+          [patterns.filename || name.replace(suffixTo(language, ""), ""), name]
         ));
     })
   }

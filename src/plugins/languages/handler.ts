@@ -1,7 +1,7 @@
-import {DefaultLanguage, jsonFilename, LanguageOption, suffixTo} from "@languages-plugin/models/language-option";
+import {DefaultLanguage, jsonFilename, LanguageOption} from "@languages-plugin/models/language-option";
 import {assign, getprop, getters, uid, writeable} from "@languages-plugin/shortcuts/properties";
 import {parameters, PluginName} from "@languages-plugin/parameters";
-import {concat, get, get2, set2, string} from "@languages-plugin/shortcuts/mappers";
+import {concat, flattenobj, get, get2, set2, string} from "@languages-plugin/shortcuts/mappers";
 import {each, each2} from "@languages-plugin/shortcuts/iterables";
 import {fetchJson} from "@languages-plugin/shortcuts/requests";
 import {append} from "@languages-plugin/shortcuts/env/logger";
@@ -12,12 +12,14 @@ import {skillFromTransform} from "@languages-plugin/mappers/skill";
 import {stateFromTransform} from "@languages-plugin/mappers/state";
 import {troopFromTransform} from "@languages-plugin/mappers/troop";
 import {assignCommandToEvent} from "@languages-plugin/mappers/event";
-import {Filepath} from "@languages-plugin/shortcuts/env/path";
+import {join, sep} from "@languages-plugin/shortcuts/env/path";
 import {KeyableObject} from "@jstls/types/core/objects";
 import {Maybe} from "@jstls/types/core";
 import {mapFromTransform} from "@languages-plugin/mappers/map";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 import {partialMethod} from "@languages-plugin/shortcuts/cls";
+import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
+import {keys} from "@jstls/core/objects/handlers/properties";
 
 export interface PluginHandler {
   readonly language: LanguageOption
@@ -135,7 +137,7 @@ export function update($this: PluginHandler) {
 
   // assign custom values
   set2($this, customsKey, file.custom)
-  set2($this, imagesKey, file.images)
+  set2($this, imagesKey, flattenobj(file.images, sep))
   set2($this, mapsKey, file.maps);
 }
 
@@ -157,21 +159,13 @@ export function getImage(images: KeyableObject, folder: string, filename: string
   if (!parameters.enableImages || !isDefined(images))
     return {filename, success: !parameters.enableImages};
 
-  const folderpath = new Filepath(folder),
-    filepath = new Filepath(filename),
-    parts = folderpath.parts.concat(filepath.parts),
-    result = get.apply(
-      null,
-      concat(
-        [images],
-        parts
-      ) as any
-    );
+  const filepath = join(folder, filename),
+    result = get2(images, filepath);
 
   if (isString(result))
     return {filename: result, success: true};
 
-  return {filename: filepath.toString(), success: false};
+  return {filename, success: false};
 }
 
 // instance the uids for properties
@@ -237,27 +231,27 @@ const indexKey = uid("i"),
       const $this = this,
         images = get2($this, imagesKey) as KeyableObject;
 
+      filename = string(filename)
       const {filename: result, success} = getImage(images, folder, filename);
 
       if (success)
-        return result;
-
-      const filepath = new Filepath(filename),
-        name = filepath.prefix;
+        return result || filename;
 
       for (let i = 0; i < parameters.languages.length; i++) {
         const language = parameters.languages[i],
-          languageSuffix = suffixTo(language);
+          result = extractFromSuffix(filename);
 
-        if (name.endsWith(languageSuffix)) {
-          const fixedName = name.substring(0, name.length - languageSuffix.length),
-            parent = filepath.parent,
-            suffix = filepath.suffix,
-            extension = suffix === name ? "" : suffix;
+        if (
+          keys(result).length &&
+          (!isDefined(result.code) || language.code === result.code) &&
+          (!isDefined(result.name) || language.name === result.name) &&
+          (!isDefined(result.label) || language.label === result.label)
+        ) {
+          const languageSuffix = suffixTo(language, ""),
+            fixedName = result.filename || filename.replace(languageSuffix, "");
 
-          if (!language.equals($this.language)) {
-            filename = parent ? parent.join(fixedName + extension).toString() : fixedName + extension;
-          }
+          if (!language.equals($this.language))
+            filename = fixedName;
 
           return filename;
         }
@@ -283,6 +277,7 @@ writeable(handler, filesKey, {});
 writeable(handler, customsKey, null);
 writeable(handler, imagesKey, null)
 writeable(handler, mapsKey, null)
+writeable(handler, setupKey, false);
 // set the getters
 getters(handler, {
   name: partialMethod(getprop, nameKey),

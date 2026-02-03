@@ -104,6 +104,13 @@
  * @default lang
  * @parent enableImages
  *
+ * @param imagePattern
+ * @text Image Filename Pattern
+ * @type string
+ * @desc Pattern for localized image filenames. Can use <%= '${' %>filename}, <%= '${' %>code}, <%= '${' %>name}, and <%= '${' %>label} placeholders.
+ * @default <%= '${' %>filename}.<%= '${' %>code}
+ * @parent enableImages
+ *
  * @param enableCustom
  * @text Enable Custom Texts
  * @type boolean
@@ -214,6 +221,12 @@
  * =============================================================================
  * Enable "Enable Image Localization" to use different images for each language.
  * You can configure how these are defined using the "Image Definition Mode".
+ *
+ * Supported placeholders for "Image Filename Pattern":
+ * - <%= '${' %>filename}: The original filename.
+ * - <%= '${' %>code}: The language code.
+ * - <%= '${' %>name}: The language name.
+ * - <%= '${' %>label}: The language label.
  *
  * =============================================================================
  * Custom Texts

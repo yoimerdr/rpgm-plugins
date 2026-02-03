@@ -29,6 +29,7 @@ export interface Parameters {
 
   enableImages: boolean;
   imageMode: "all" | "lang",
+  imagePattern: string;
 
   enableCustom: boolean;
   customTarget: CustomTextsTarget;
@@ -36,11 +37,7 @@ export interface Parameters {
 }
 
 export const PluginName = "YDP_Languages",
-  parameters: Parameters = {} as Parameters;
-
-export function setupParameters() {
-  // load the plugin parameters
-  const params = PluginManager.parameters(PluginName) || {
+  parameters: Parameters = {
     languages: [] as readonly LanguageOption[],
     generationMode: "auto",
     loadMode: "full",
@@ -52,11 +49,16 @@ export function setupParameters() {
 
     enableImages: true,
     imageMode: "lang",
+    imagePattern: "${filename}.${code}",
 
     enableCustom: true,
     customTexts: {},
     customTarget: "no-default",
   } as Parameters;
+
+export function setupParameters() {
+  // load the plugin parameters
+  const params = PluginManager.parameters(PluginName) || {};
 
   assign(parameters, params);
   // validates the separator type for the join.
@@ -89,6 +91,11 @@ export function setupParameters() {
     );
   } catch (e) {
     console.error(e);
+  }
+
+  if (!parameters.imagePattern || parameters.imagePattern.trim() === "") {
+    console.warn("No image pattern found. The default pattern will be used.");
+    set2(parameters, "imagePattern", "${filename}.${code}");
   }
 
 
