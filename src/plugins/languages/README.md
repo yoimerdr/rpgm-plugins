@@ -17,9 +17,12 @@ switch images based on the selected language.
 
 ### Setup
 
-1. Define your supported languages in the **Supported Languages** parameter.
-2. Choose a **Language Directory** (default: `data/languages`).
-3. Configure the **Image Filename Pattern** if you plan to use localized images.
+1. Download the latest version from [here](https://github.com/yoimerdr/rpgm-plugins/releases/tag/languages-latest).
+2. Copy `plugins/[min]/YDP_Languages[.light].js` to your project's `js/plugins/` folder.
+3. Enable the plugin in RPG Maker.
+4. Define your supported languages in the **Supported Languages** parameter.
+5. Choose a **Language Directory** (default: `data/languages`).
+6. Configure the **Image Filename Pattern** if you plan to use localized images.
 
 ### Generating Translations
 
