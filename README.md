@@ -61,6 +61,14 @@ Standardizes image paths to ensure cross-platform compatibility, fixing issues w
 - [Changelog](/src/plugins/crossimages/CHANGELOG.md)
 - [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/crossimages-latest)
 
+### Languages Plugin (YDP_Languages)
+
+A robust localization system for translating text and switching images based on the selected language.
+
+- [Documentation](/src/plugins/languages/README.md)
+- [Changelog](/src/plugins/languages/CHANGELOG.md)
+- [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/languages-latest)
+
 ## Contributing
 
 To add a new plugin:

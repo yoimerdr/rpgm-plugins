@@ -26,6 +26,9 @@
       ],
       "@crossimages-plugin/*": [
         "./src/plugins/crossimages/*"
+      ],
+      "@languages-plugin/*": [
+        "./src/plugins/languages/*"
       ]
     }
   },
