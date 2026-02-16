@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Skip empty event/map objects when extracting so the JSON output no longer stores blank entries that add noise to the file.
+- Fixed event translation not preserving empty lines in joined "Show Text" commands, which caused text to shift incorrectly.
 
 
 ## [1.0.0] - 2026-02-03
