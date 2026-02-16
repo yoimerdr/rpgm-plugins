@@ -18,6 +18,7 @@ import {list} from "@languages-plugin/shortcuts/images";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
 import {keys} from "@jstls/core/objects/handlers/properties";
+import {getKeys} from "@languages-plugin/shortcuts/properties";
 
 export function generateLanguagesFolder() {
   (new Filepath(parameters.folder))
@@ -44,7 +45,12 @@ function loadDataFiles(manager: FileManager, source: LanguageSource): LanguageSo
       const file = loadMapFile(value, manager);
       if (!file)
         return;
-      set2(file, 'messages', loadMapCommands(file))
+
+      let commands = loadMapCommands(file);
+      if (getKeys(commands).isEmpty())
+        return;
+
+      set2(file, 'messages', commands)
       source.maps[id!] = mapToTransform(file as MapSource)
     }
   )
