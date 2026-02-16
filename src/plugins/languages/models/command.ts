@@ -8,21 +8,58 @@ import {descriptor2, readonly, readonlys2} from "@languages-plugin/shortcuts/pro
 import {JsonSerializable} from "@languages-plugin/lib";
 import {setTo} from "@languages-plugin/shortcuts/mappers";
 
+/**
+ * Represents a text command extracted from an event in the game.
+ * Used for storing and manipulating localized event text commands.
+ */
 export interface TextCommand extends JsonSerializable {
+  /** The ID of the event containing this text command */
   readonly eventId: number;
+
+  /** The index of the event page containing this text command */
   readonly pageIndex: number;
+
+  /** The index of this command within the event's command list */
   readonly index: number;
+
+  /** The text parameters of this command (typically the text to display) */
   readonly parameters: string[];
+
+  /**
+   * The number of original text commands that were joined together.
+   * Only set when multiple Show Text commands were merged during extraction.
+   */
   readonly length?: MaybeNumber;
 
+  /**
+   * Joins multiple text command parameters into a single parameter.
+   * Used when saving translations to combine split text lines.
+   * @returns A new TextCommand with parameters joined using the joinSeparator
+   */
   join(): TextCommand;
 
+  /**
+   * Splits a joined text command back into individual commands.
+   * Used when loading translations to restore original command structure.
+   * @returns A new TextCommand with parameters split by the joinSeparator
+   */
   split(): TextCommand;
 
+  /** Whether this command has valid indices (eventId, pageIndex, index >= 0) */
   readonly isValid: boolean;
 }
 
+/**
+ * Constructor interface for creating TextCommand instances.
+ */
 export interface TextCommandConstructor extends WithPrototype<TextCommand> {
+  /**
+   * Creates a new TextCommand with the specified parameters.
+   * @param eventId - The event ID
+   * @param pageIndex - The page index
+   * @param index - The command index
+   * @param parameters - The text parameters
+   */
   new(eventId?: number,
       pageIndex?: number,
       index?: number,

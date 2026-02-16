@@ -1,11 +1,11 @@
-import {getPropertyOf} from "@languages-plugin/shortcuts/properties";
+import {getKeys, getPropertyOf} from "@languages-plugin/shortcuts/properties";
 import {actorToTransform} from "@languages-plugin/mappers/actor";
 import {itemToTransform} from "@languages-plugin/mappers/item";
 import {eventToCommand} from "@languages-plugin/mappers/event";
 import {troopToTransform} from "@languages-plugin/mappers/troop";
 import {skillToTransform} from "@languages-plugin/mappers/skill";
 import {stateToTransform} from "@languages-plugin/mappers/state";
-import {LanguageSource, Troop} from "@languages-plugin/models/source";
+import {LanguageSource, Troop, WithTextCommands} from "@languages-plugin/models/source";
 import {KeyableObject} from "@jstls/types/core/objects";
 import {parameters} from "@languages-plugin/parameters";
 import {Maybe} from "@jstls/types/core";
@@ -13,6 +13,11 @@ import {indefinite} from "@jstls/core/utils/types";
 import {each, keach} from "@languages-plugin/shortcuts/iterables";
 import {get2, set2} from "@languages-plugin/shortcuts/mappers";
 
+/**
+ * Creates the custom texts object based on plugin parameters.
+ * This generates the initial custom text structure that gets saved to language files.
+ * @returns A KeyableObject containing custom text categories and keys, or undefined if custom texts are disabled
+ */
 export function createCustomTexts(): Maybe<KeyableObject> {
   if (!parameters.enableCustom)
     return indefinite
@@ -32,21 +37,39 @@ export function createCustomTexts(): Maybe<KeyableObject> {
   return source;
 }
 
+/**
+ * Creates a complete LanguageSource object by extracting all translatable content from the current game data.
+ * This includes:
+ * - Game title and system terms
+ * - Database entries (actors, items, skills, states, classes, etc.)
+ * - Common event text commands
+ * - Troop battle messages
+ * @returns A fully populated LanguageSource object ready for JSON serialization
+ */
 export function createLanguageSource(): LanguageSource {
+  let commonEvents: WithTextCommands = undefined!;
+
+  let events = eventToCommand(<MapEvent>{
+    id: 0,
+    pages: $dataCommonEvents as any,
+    name: ""
+  });
+
+  if (getKeys(events).isNotEmpty()) {
+    commonEvents = {
+      messages: {
+        0: events
+      }
+    }
+  }
+
+
   return {
     title: $dataSystem.gameTitle,
     actors: $dataActors.mapIf(actorToTransform),
     armors: $dataArmors.mapIf(itemToTransform),
     classes: $dataClasses.mapIf(getPropertyOf("name")),
-    commonEvents: {
-      messages: {
-        0: eventToCommand(<MapEvent>{
-          id: 0,
-          pages: $dataCommonEvents as any,
-          name: ""
-        })
-      }
-    },
+    commonEvents,
     custom: indefinite!,
     enemies: $dataEnemies.mapIf(getPropertyOf("battlerName")),
     equipTypes: $dataSystem.equipTypes,

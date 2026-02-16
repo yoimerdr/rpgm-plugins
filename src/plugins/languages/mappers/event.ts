@@ -3,22 +3,39 @@ import {getIf, isDefined, isNumber, isObject, returns} from "@languages-plugin/s
 import {isArray} from "@jstls/core/shortcuts/array";
 import {TextCommand} from "@languages-plugin/models/command";
 import {each, keach} from "@languages-plugin/shortcuts/iterables";
-import {get, string} from "@languages-plugin/shortcuts/mappers";
+import {get, set, set2, string} from "@languages-plugin/shortcuts/mappers";
 import {parameters} from "@languages-plugin/parameters";
-import {readonly} from "@languages-plugin/shortcuts/properties";
+import {getKeys, readonly} from "@languages-plugin/shortcuts/properties";
 import {SetTransformDescriptor} from "@jstls/types/core/objects/getset";
 import {fromSourceTransform, toSourceTransform} from "@languages-plugin/mappers/base";
 import {Maybe} from "@jstls/types/core";
 
 
+/**
+ * Transform descriptor for TextCommandEvent objects.
+ * Maps text command properties to short keys for compact JSON storage.
+ * - "p" (parameters): The text parameters array
+ * - "l" (length): Number of joined commands
+ */
 export const commandDescriptor: Readonly<SetTransformDescriptor<TextCommandEvent>> = {
   parameters: "p",
   length: "l"
 }
 
+/**
+ * Transforms command data for storage in language files.
+ * - commandToTransform: Converts TextCommandEvent to compact JSON format
+ * - commandFromTransform: Converts compact data back to TextCommandEvent format
+ */
 export const commandToTransform = toSourceTransform<TextCommandEvent>(commandDescriptor),
   commandFromTransform = fromSourceTransform<TextCommandEvent>(commandDescriptor);
 
+/**
+ * Assigns translated text commands back to the game event objects.
+ * This applies the translated text to the actual RPG Maker event commands.
+ * @param commands - The EventTextCommand containing all translated text commands
+ * @param events - Array of event objects (MapEvent or DataTroop) to update
+ */
 export function assignCommandToEvent(commands: EventTextCommand, events: (MapEvent | DataTroop)[]) {
   if (!isObject(commands) || !isArray(events))
     return;
@@ -111,8 +128,7 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
       if (!isObject(page) || page.list.isEmpty())
         return;
 
-      !commands[pageIndex] && (commands[pageIndex] = {});
-
+      !commands[pageIndex] && set2(commands, pageIndex, {});
 
       each(
         page.list,
@@ -136,13 +152,13 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
 
               // put the first parameter of current command params
               const first = string(params.first());
-              first.isNotEmpty() && command.parameters.push(first);
+              command.parameters.push(first);
             } else {
               // if command code is not for show text, check if join show texts is active for push current
               parameters.joinShowText && appendCommand(command.pageIndex, command.index);
               // push current command with code for text
-              if (params.isNotEmpty())
-                commands[pageIndex][index] = commandToTransform(
+              if (params.isNotEmpty()) {
+                let result = commandToTransform(
                   new TextCommand(
                     event.id,
                     pageIndex,
@@ -151,10 +167,15 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
                   )
                 )
 
+                getKeys(result).isNotEmpty() && set(commands, pageIndex, index, result)
+              }
+
             }
           } else appendCommand(command.pageIndex, command.index) // if command code is not for text, try to append
         }
       )
+
+      getKeys(commands[pageIndex]).isEmpty() && (delete commands[pageIndex]);
     }
   )
 

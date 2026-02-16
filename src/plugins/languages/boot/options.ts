@@ -6,12 +6,23 @@ import {DefaultLanguage} from "@languages-plugin/models/language-option";
 import {parameters} from "@languages-plugin/parameters";
 import {ExtendMethodBuilders} from "@jstls/types/core/objects/extender";
 
+/**
+ * Adds the language option command to the options menu.
+ * This is called as part of the Window_Options addGeneralOptions method.
+ * @param this - The Window_Options instance
+ */
 export function addLanguageOption(this: Window_Options) {
   const name = handler.label || DefaultLanguage.label;
   this.addCommand(name, handler.code);
 }
 
-// Window options
+/**
+ * Handles cursor navigation (left/right) when the language option is selected.
+ * Cycles through available languages when the user presses left or right.
+ * @param $this - The Window_Options instance
+ * @param prev - If true, moves to previous language; false moves to next
+ * @returns true if the action was handled, false otherwise
+ */
 function processOptionAction($this: Window_Options, prev: boolean): boolean {
   const symbol = $this.commandSymbol($this.index());
   if (symbol === handler.code) {
@@ -21,6 +32,10 @@ function processOptionAction($this: Window_Options, prev: boolean): boolean {
   return false;
 }
 
+/**
+ * Applies the language option to the game's options menu.
+ * Extends Window_Options to add language selection and handles custom text for options.
+ */
 export function applyOptions() {
   const {enableCustom} = parameters,
     descriptors: ExtendMethodBuilders<Window_Options> = {

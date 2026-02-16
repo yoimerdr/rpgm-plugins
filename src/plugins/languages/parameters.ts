@@ -1,6 +1,6 @@
 import {assign} from "./shortcuts/properties";
 import {concat, get2, set2} from "./shortcuts/mappers";
-import {each, keach} from "./shortcuts/iterables";
+import {each, each2, keach} from "./shortcuts/iterables";
 import {getIf, isString, returns} from "./shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 import {LanguageOption} from "./models/language-option";
@@ -8,31 +8,81 @@ import {join} from "@languages-plugin/shortcuts/env/path";
 import {bool} from "@languages-plugin/shortcuts/parameters";
 import {freeze} from "@jstls/core/shortcuts/object";
 
+/**
+ * Controls when the plugin generates or updates language JSON files.
+ * - "auto": Generate files only if they don't exist
+ * - "always": Regenerate files every time the game starts
+ * - "none": Disable file generation completely
+ */
 export type GenerateLanguageMode = "auto" | "always" | "none";
+
+/**
+ * Controls which language files receive custom text entries.
+ * - "all": Custom texts are added to all language files
+ * - "no-default": Custom texts are NOT added to the default language file
+ */
 export type CustomTextsTarget = "all" | "no-default";
 
+/**
+ * Configuration for custom text entries that can be translated.
+ * Custom texts allow translating strings that aren't in the standard RPG Maker database.
+ */
 export interface CustomTexts {
+  /** Custom texts for menu options */
   readonly option: string[];
+
+  /** Custom texts for status/boolean values */
   readonly status: string[];
+
+  /** Custom texts for general text strings */
   readonly text: string[];
 }
 
+/**
+ * The complete set of plugin parameters configurable in RPG Maker.
+ */
 export interface Parameters {
+  /** Array of LanguageOption objects defining available languages */
   languages: readonly LanguageOption[]
+
+  /** Controls file generation mode (auto, always, none) */
   generationMode: GenerateLanguageMode;
+
+  /** Memory loading strategy: "full" loads all languages, "lang" loads only active */
   loadMode: "full" | "lang";
+
+  /** Relative folder path where language JSON files are stored */
   folder: string;
 
+  /** Whether to join consecutive Show Text commands into single entries */
   joinShowText: boolean;
+
+  /** Separator string used when joining multiple Show Text commands */
   joinSeparator: string;
+
+  /** How to interpret the join separator: "strict" or "unescaped" */
   joinSeparatorType: "strict" | "unescaped";
 
+  /** Whether to enable image localization feature */
   enableImages: boolean;
+
+  /**
+   * Image filtering mode:
+   * - "all": All images in folders are candidates for localization
+   * - "lang": Only images with explicit language suffix are processed
+   */
   imageMode: "all" | "lang",
+
+  /** Pattern template for localized image filenames (e.g., "${filename}.${code}") */
   imagePattern: string;
 
+  /** Whether to enable custom text translations */
   enableCustom: boolean;
+
+  /** Which language files receive custom text entries */
   customTarget: CustomTextsTarget;
+
+  /** The custom texts configuration from plugin parameters */
   customTexts: CustomTexts;
 }
 
@@ -81,7 +131,24 @@ export function setupParameters() {
     texts = isString(texts) ? JSON.parse(texts) as CustomTexts : texts as any as CustomTexts;
 
     keach(texts, (value: string[] | string, key) => {
-      set2(texts, key, isString(value) ? JSON.parse(value as string) : value);
+      value = isString(value) ? JSON.parse(value as string) : value as string;
+
+      // For texts, we need to remove the quotes if they are present, because the plugin parameters are marked as notes,
+      // what wraps the text value with quotes for allow special characters like \n.
+      if (key === "text" && isArray(value)) {
+        each2(value as string[], function (value, index, arrayLike) {
+          let size = value.length >> 0;
+          if (size > 2 && value[0] === '"' && value[size - 1] === '"') {
+            try {
+              arrayLike[index] = JSON.parse(value); // Parse the value to remove the quotes and unescape the special characters.
+            } catch (e) {
+              console.error("Cannot parse the note value: " + e);
+            }
+          }
+        });
+      }
+
+      set2(texts, key, value);
     });
 
     set2(

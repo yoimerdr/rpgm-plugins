@@ -21,29 +21,87 @@ import {partialMethod} from "@languages-plugin/shortcuts/cls";
 import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
 import {keys} from "@jstls/core/objects/handlers/properties";
 
+/**
+ * Main plugin handler interface that provides access to language management functionality.
+ * Use this to programmatically interact with the localization system.
+ *
+ * @example
+ * // Change language by index
+ * YDP_Languages.handler.load(1);
+ *
+ * // Get custom text
+ * const text = YDP_Languages.handler.getCustom("text", "my_key");
+ *
+ * // Get localized image
+ * const image = YDP_Languages.handler.getImage("img/pictures", "my_image");
+ */
 export interface PluginHandler {
+  /** The currently active language configuration object */
   readonly language: LanguageOption
+
+  /** The zero-based index of the currently selected language in the languages array */
   readonly index: number;
 
+  /** The display name of the current language (e.g., "English", "Español") */
   readonly name: string;
 
+  /** The label used in the options menu for this language */
   readonly label: string;
 
+  /** The unique code identifier for this language (e.g., "en", "es") */
   readonly code: string;
 
+  /**
+   * Initializes the handler by loading language files and applying the default language.
+   * Called automatically during plugin initialization.
+   */
   setup(): void;
 
+  /**
+   * Updates the game data with the current language's translations.
+   * Use this after changing the language to refresh all translated content.
+   */
   update(): void;
 
+  /**
+   * Changes the active language to the language at the specified index.
+   * @param index - The zero-based index of the language to activate
+   * @returns true if the language was changed, false if the same language is already active
+   */
   load(index: number): boolean;
 
+  /**
+   * Retrieves a custom text value for the given key.
+   * Custom texts allow translating strings that aren't in the standard RPG Maker database.
+   * @param key - The type of custom text ("option", "status", or "text")
+   * @param name - The key identifying the custom text entry
+   * @returns The translated text, or the original name if no translation exists
+   */
   getCustom(key: string, name: string): string;
 
+  /**
+   * Resolves the appropriate image filename for the current language.
+   * Supports language-specific image variants and automatic fallback.
+   * @param folder - The folder path where the image is located (e.g., "img/pictures")
+   * @param filename - The base filename of the image
+   * @returns The resolved filename, which may include language suffix if a localized version exists
+   */
   getImage(folder: string, filename: string): string;
 
+  /**
+   * Retrieves translated map data for the specified map ID.
+   * @param id - The database ID of the map
+   * @returns The translated MapSource object, or undefined if not found
+   */
   getMap(id: number): Maybe<MapSource>;
 }
 
+/**
+ * Loads the JSON language file for the specified language from the languages folder.
+ * The file is fetched asynchronously and cached in the handler's files storage.
+ * @param language - The LanguageOption object representing the language to load
+ * @returns A promise that resolves to the LanguageSource data, or null if not found/empty
+ */
 export function loadLanguageFile(language: LanguageOption) {
   return fetchJson(jsonFilename(language, parameters.folder))
     .then((data: LanguageSource) => {
@@ -58,6 +116,11 @@ export function loadLanguageFile(language: LanguageOption) {
     }).catch(append)
 }
 
+/**
+ * Loads all configured language files based on the loadMode parameter.
+ * If loadMode is "lang", only loads the current language.
+ * If loadMode is "full", loads all languages into memory.
+ */
 export function loadLanguageFiles() {
   if (parameters.loadMode === "lang") {
     loadLanguageFile(get2(handler, languageKey));
@@ -69,6 +132,16 @@ export function loadLanguageFiles() {
   )
 }
 
+/**
+ * Applies the current language's translations to the game data.
+ * This function updates all translatable game data including:
+ * - System data (title, terms, weapon/equip/skill types)
+ * - Actors, items, skills, states, classes, enemies, troops, weapons, armors
+ * - Common events text commands
+ * - Custom texts and image mappings
+ * - Map data
+ * @param $this - The PluginHandler instance to update
+ */
 export function update($this: PluginHandler) {
   const language = get2($this, languageKey),
     files = get2($this, filesKey);
@@ -141,6 +214,13 @@ export function update($this: PluginHandler) {
   set2($this, mapsKey, file.maps);
 }
 
+/**
+ * Adjusts the language index to ensure it stays within valid bounds.
+ * If index is negative, wraps to the last language. If greater than total, wraps to first.
+ * @param total - The total number of available languages
+ * @param index - The desired language index
+ * @returns The adjusted index within valid bounds
+ */
 export function changeIndex(total: number, index: number): number {
   index = (string(index).toInt() || 0);
 
@@ -152,6 +232,14 @@ export function changeIndex(total: number, index: number): number {
   return index;
 }
 
+/**
+ * Resolves a localized image filename from the images cache.
+ * Returns the original filename if image localization is disabled or no localized version exists.
+ * @param images - The cached images object from the language file
+ * @param folder - The folder path (e.g., "img/pictures")
+ * @param filename - The original filename to resolve
+ * @returns An object containing the resolved filename and success status
+ */
 export function getImage(images: KeyableObject, folder: string, filename: string): {
   filename: string,
   success: boolean

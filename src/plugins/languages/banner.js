@@ -1,5 +1,5 @@
 ///=============================================================================
-/// YDP_Languages | 1.0.0 | <%= moment().format('MMMM Do YYYY') %>
+/// YDP_Languages | 1.0.1 | <%= moment().format('MMMM Do YYYY') %>
 ///=============================================================================
 /*~struct~LanguageOption:
 * @param code
@@ -25,7 +25,7 @@
 * @type string[]
 * @param text
 * @text General purpose texts
-* @type string[]
+* @type note[]
 * */
 /*:
  * @plugindesc
@@ -115,14 +115,14 @@
  * @text Enable Custom Texts
  * @type boolean
  * @desc Enable translations for texts that cannot be extracted automatically (e.g. dynamic show texts).
- * @default false
+ * @default true
  *
  * @param customTexts
  * @text Custom Texts
  * @type struct<CustomText>
  * @desc Custom texts to be translated.
  * @parent enableCustom
- * @default {"option":"[\"Save\", \"Load\", \"Cancel\", \"Delete\", \"Exit\"]", "status":"[\"On\", \"Off\"]", "text":"[\"Please select a file slot.\", \"Loads the data from the saved game.\"]"}
+ * @default {"option":"[\"Save\", \"Load\", \"Cancel\", \"Delete\", \"Exit\", \"New Game\", \"Continue\", \"Credits\", \"Options\", \"Exit\"]","status":"[\"On\", \"Off\"]","text":"[\"\\\"Please select a file slot.\\\"\",\"\\\"Loads the data from the saved game.\\\"\"]"}
  *
  * @param customTargets
  * @text Custom Targets
