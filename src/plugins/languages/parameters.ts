@@ -85,16 +85,18 @@ export function setupParameters() {
 
       // For texts, we need to remove the quotes if they are present, because the plugin parameters are marked as notes,
       // what wraps the text value with quotes for allow special characters like \n.
-      if(key === "text" && isArray(value)) {
-        each2(value as string[], function (value, index, arrayLike){
+      if (key === "text" && isArray(value)) {
+        each2(value as string[], function (value, index, arrayLike) {
           let size = value.length >> 0;
-          if(size > 2 && value[0] === '"' && value[size - 1] === '"') {
-            arrayLike[index] = value.substring(1, size - 1);
+          if (size > 2 && value[0] === '"' && value[size - 1] === '"') {
+            try {
+              arrayLike[index] = JSON.parse(value); // Parse the value to remove the quotes and unescape the special characters.
+            } catch (e) {
+              console.error("Cannot parse the note value: " + e);
+            }
           }
         });
       }
-
-
 
       set2(texts, key, value);
     });
