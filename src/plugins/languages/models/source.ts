@@ -1,6 +1,7 @@
 import {MaybeNumber} from "@jstls/types/core";
 import {JsonSerializable, Nameable} from "@languages-plugin/lib";
 import {KeyableObject} from "@jstls/types/core/objects";
+import {CustomTexts} from "@languages-plugin/parameters";
 
 export interface TextCommandEvent {
   parameters: string[];
@@ -48,5 +49,5 @@ export interface LanguageSource {
   commonEvents: WithTextCommands
   maps: KeyableObject<MapSource>,
   images: KeyableObject,
-  custom: KeyableObject
+  custom: CustomTexts
 }

@@ -1,6 +1,6 @@
 import {DefaultLanguage, jsonFilename, LanguageOption} from "@languages-plugin/models/language-option";
 import {assign, getprop, getters, uid, writeable} from "@languages-plugin/shortcuts/properties";
-import {parameters, PluginName} from "@languages-plugin/parameters";
+import {CustomTexts, parameters, PluginName} from "@languages-plugin/parameters";
 import {concat, flattenobj, get, get2, set2, string} from "@languages-plugin/shortcuts/mappers";
 import {each, each2} from "@languages-plugin/shortcuts/iterables";
 import {fetchJson} from "@languages-plugin/shortcuts/requests";
@@ -20,6 +20,7 @@ import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 import {partialMethod} from "@languages-plugin/shortcuts/cls";
 import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
 import {keys} from "@jstls/core/objects/handlers/properties";
+import {customTextsToObject, guessCustomTextsType} from "@languages-plugin/mappers/source";
 
 export interface PluginHandler {
   readonly language: LanguageOption
@@ -135,9 +136,20 @@ export function update($this: PluginHandler) {
     }
   ])
 
+  let custom: KeyableObject = file.custom;
+
+  if (custom) {
+    let type = guessCustomTextsType(custom as CustomTexts);
+    if (type !== "unknown" && type === "array") {
+      custom = customTextsToObject(custom as CustomTexts);
+    } else if (type === "unknown") {
+      console.error("The custom texts structure must be an object with arrays of strings or an object with objects of strings. The current structure is unknown. The custom texts will not be loaded.");
+    }
+  }
+
   // assign custom values
-  set2($this, customsKey, file.custom)
-  set2($this, imagesKey, flattenobj(file.images, sep))
+  set2($this, customsKey, custom);
+  set2($this, imagesKey, flattenobj(file.images, sep));
   set2($this, mapsKey, file.maps);
 }
 
