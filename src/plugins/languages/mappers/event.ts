@@ -54,17 +54,9 @@ export function assignCommandToEvent(commands: EventTextCommand, events: (MapEve
   }
 
   function assignJoinedParameters(command: TextCommand) {
-    let reducerIndex = 0,
-      source = command.split();
+    let source = command.split();
 
     each(source.parameters, function (parameter, index) {
-      if (parameter.isEmpty()) {
-        reducerIndex++;
-        return;
-      }
-
-      index -= reducerIndex;
-
       if (index.isFromUntil(0, command.length!)) {
         const item = getEventItem(command, index);
         item && (item.parameters[0] = parameter);
