@@ -4,6 +4,12 @@ import {handler} from "@languages-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
 import {parameters} from "@languages-plugin/parameters";
 
+/**
+ * Applies image localization support to the game.
+ * Extends ImageManager.loadBitmap and Game_Screen.showPicture to automatically
+ * resolve localized image filenames based on the current language.
+ * Only applies if enableImages is true in parameters.
+ */
 export function applyImages() {
   if (!parameters.enableImages)
     return;

@@ -4,6 +4,11 @@ import {handler} from "@languages-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
 import {parameters} from "@languages-plugin/parameters";
 
+/**
+ * Applies custom text translation support to window rendering.
+ * Extends Window_Base.drawText and Window_Base.drawTextEx to automatically
+ * translate custom text strings when they are displayed.
+ */
 export function applyWindow() {
   if(!parameters.enableCustom)
     return;

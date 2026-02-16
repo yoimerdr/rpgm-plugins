@@ -20,11 +20,22 @@ import {extractFromSuffix, suffixTo} from "@languages-plugin/models/helpers";
 import {keys} from "@jstls/core/objects/handlers/properties";
 import {getKeys} from "@languages-plugin/shortcuts/properties";
 
+/**
+ * Creates the languages folder in the project directory if it doesn't exist.
+ * This folder will contain all generated language JSON files.
+ */
 export function generateLanguagesFolder() {
   (new Filepath(parameters.folder))
     .mkdir({recursive: true, existsOk: true}, fs());
 }
 
+/**
+ * Loads all map data files from the data folder and extracts their text commands.
+ * Scans for Map001.json, Map002.json, etc. and extracts Show Text commands from events.
+ * @param manager - The FileManager instance for reading files
+ * @param source - The LanguageSource object to populate with map data
+ * @returns The populated LanguageSource with map translations
+ */
 function loadDataFiles(manager: FileManager, source: LanguageSource): LanguageSource {
   each(
     manager.readdirSync("data"),
@@ -58,6 +69,13 @@ function loadDataFiles(manager: FileManager, source: LanguageSource): LanguageSo
   return source;
 }
 
+/**
+ * Processes and indexes image files for language-specific localization.
+ * Filters images based on imageMode and extracts language information from filenames.
+ * @param source - The LanguageSource object to populate with image mappings
+ * @param language - The language option being processed
+ * @param images - Array of all image file paths in the project
+ */
 function loadLanguageImages(source: LanguageSource, language: LanguageOption, images: string[],) {
   const langImages = parameters.imageMode === "all" ? images :
     images.filter(value => {
@@ -88,6 +106,12 @@ function loadLanguageImages(source: LanguageSource, language: LanguageOption, im
   }
 }
 
+/**
+ * Generates language JSON files for all configured languages.
+ * This function is called during development to extract translatable content.
+ * It only runs in desktop environments (NW.js) with the "test" option enabled.
+ * The generation mode (auto/always/none) controls when files are regenerated.
+ */
 export function generateLanguageFiles() {
   if (!Utils.isNwjs() || !Utils.isOptionValid("test") || parameters.generationMode === "none")
     return;

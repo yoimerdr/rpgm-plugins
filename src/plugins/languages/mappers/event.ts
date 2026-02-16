@@ -11,14 +11,31 @@ import {fromSourceTransform, toSourceTransform} from "@languages-plugin/mappers/
 import {Maybe} from "@jstls/types/core";
 
 
+/**
+ * Transform descriptor for TextCommandEvent objects.
+ * Maps text command properties to short keys for compact JSON storage.
+ * - "p" (parameters): The text parameters array
+ * - "l" (length): Number of joined commands
+ */
 export const commandDescriptor: Readonly<SetTransformDescriptor<TextCommandEvent>> = {
   parameters: "p",
   length: "l"
 }
 
+/**
+ * Transforms command data for storage in language files.
+ * - commandToTransform: Converts TextCommandEvent to compact JSON format
+ * - commandFromTransform: Converts compact data back to TextCommandEvent format
+ */
 export const commandToTransform = toSourceTransform<TextCommandEvent>(commandDescriptor),
   commandFromTransform = fromSourceTransform<TextCommandEvent>(commandDescriptor);
 
+/**
+ * Assigns translated text commands back to the game event objects.
+ * This applies the translated text to the actual RPG Maker event commands.
+ * @param commands - The EventTextCommand containing all translated text commands
+ * @param events - Array of event objects (MapEvent or DataTroop) to update
+ */
 export function assignCommandToEvent(commands: EventTextCommand, events: (MapEvent | DataTroop)[]) {
   if (!isObject(commands) || !isArray(events))
     return;

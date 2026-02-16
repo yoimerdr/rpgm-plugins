@@ -8,6 +8,12 @@ import {getKeys} from "@languages-plugin/shortcuts/properties";
 import {append} from "@languages-plugin/shortcuts/env/logger";
 import {EventTextCommand} from "@languages-plugin/models/source";
 
+/**
+ * Loads a map JSON file from the data folder.
+ * @param value - The filename of the map (e.g., "Map001.json")
+ * @param manager - The FileManager instance for reading files
+ * @returns The parsed DataMap object, or indefinite if parsing fails
+ */
 export function loadMapFile(value: string, manager: FileManager) {
 
   try {
@@ -18,6 +24,12 @@ export function loadMapFile(value: string, manager: FileManager) {
   }
 }
 
+/**
+ * Extracts text commands from all events in a map.
+ * Iterates through all events and uses eventToCommand to extract Show Text commands.
+ * @param file - The DataMap object to extract commands from
+ * @returns An EventTextCommand object mapping event IDs to their text commands
+ */
 export function loadMapCommands(file: DataMap) {
   const messages: EventTextCommand = {}
   each(file.events, function (event) {

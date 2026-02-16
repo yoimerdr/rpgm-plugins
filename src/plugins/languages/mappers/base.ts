@@ -7,6 +7,13 @@ import {keach} from "@languages-plugin/shortcuts/iterables";
 import {isDefined, isObject, isString} from "@languages-plugin/shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 
+/**
+ * Creates a JSON transformation function for serializing an object to a reduced format.
+ * Filters out empty values and transforms property names according to the descriptor.
+ * Used for creating the toJSON method in data objects.
+ * @param descriptor - The transformation descriptor mapping property names to short keys
+ * @returns A function that transforms an object to its JSON-serializable form
+ */
 export function toJsonTransform<T>(descriptor: SetTransformDescriptor<T>) {
   return function (this: T) {
     const source = setTransform(this, descriptor, {}),
@@ -28,6 +35,12 @@ export function toJsonTransform<T>(descriptor: SetTransformDescriptor<T>) {
   }
 }
 
+/**
+ * Creates a source transformation function that adds a toJSON method to the object.
+ * This allows the object to be serialized with shortened property keys when converted to JSON.
+ * @param descriptor - The SetTransformDescriptor defining property mappings
+ * @returns A function that transforms an object for source storage
+ */
 export function toSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
   return function (source: T) {
     source = setTo(source as any, getKeys(descriptor), {}) as T;
@@ -37,6 +50,12 @@ export function toSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
   }
 }
 
+/**
+ * Creates a reverse transformation function that converts language file data back to RPG Maker format.
+ * Maps short keys from the language file back to full property names using the descriptor.
+ * @param descriptor - The SetTransformDescriptor defining property mappings
+ * @returns A function that transforms source data back to RPG Maker object format
+ */
 export function fromSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
   return function (source: KeyableObject): T {
     return setTransform(source, descriptor, {}, true) as T;

@@ -8,31 +8,81 @@ import {join} from "@languages-plugin/shortcuts/env/path";
 import {bool} from "@languages-plugin/shortcuts/parameters";
 import {freeze} from "@jstls/core/shortcuts/object";
 
+/**
+ * Controls when the plugin generates or updates language JSON files.
+ * - "auto": Generate files only if they don't exist
+ * - "always": Regenerate files every time the game starts
+ * - "none": Disable file generation completely
+ */
 export type GenerateLanguageMode = "auto" | "always" | "none";
+
+/**
+ * Controls which language files receive custom text entries.
+ * - "all": Custom texts are added to all language files
+ * - "no-default": Custom texts are NOT added to the default language file
+ */
 export type CustomTextsTarget = "all" | "no-default";
 
+/**
+ * Configuration for custom text entries that can be translated.
+ * Custom texts allow translating strings that aren't in the standard RPG Maker database.
+ */
 export interface CustomTexts {
+  /** Custom texts for menu options */
   readonly option: string[];
+
+  /** Custom texts for status/boolean values */
   readonly status: string[];
+
+  /** Custom texts for general text strings */
   readonly text: string[];
 }
 
+/**
+ * The complete set of plugin parameters configurable in RPG Maker.
+ */
 export interface Parameters {
+  /** Array of LanguageOption objects defining available languages */
   languages: readonly LanguageOption[]
+
+  /** Controls file generation mode (auto, always, none) */
   generationMode: GenerateLanguageMode;
+
+  /** Memory loading strategy: "full" loads all languages, "lang" loads only active */
   loadMode: "full" | "lang";
+
+  /** Relative folder path where language JSON files are stored */
   folder: string;
 
+  /** Whether to join consecutive Show Text commands into single entries */
   joinShowText: boolean;
+
+  /** Separator string used when joining multiple Show Text commands */
   joinSeparator: string;
+
+  /** How to interpret the join separator: "strict" or "unescaped" */
   joinSeparatorType: "strict" | "unescaped";
 
+  /** Whether to enable image localization feature */
   enableImages: boolean;
+
+  /**
+   * Image filtering mode:
+   * - "all": All images in folders are candidates for localization
+   * - "lang": Only images with explicit language suffix are processed
+   */
   imageMode: "all" | "lang",
+
+  /** Pattern template for localized image filenames (e.g., "${filename}.${code}") */
   imagePattern: string;
 
+  /** Whether to enable custom text translations */
   enableCustom: boolean;
+
+  /** Which language files receive custom text entries */
   customTarget: CustomTextsTarget;
+
+  /** The custom texts configuration from plugin parameters */
   customTexts: CustomTexts;
 }
 
