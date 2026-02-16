@@ -1,6 +1,6 @@
 import {assign} from "./shortcuts/properties";
 import {concat, get2, set2} from "./shortcuts/mappers";
-import {each, keach} from "./shortcuts/iterables";
+import {each, each2, keach} from "./shortcuts/iterables";
 import {getIf, isString, returns} from "./shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 import {LanguageOption} from "./models/language-option";
@@ -81,7 +81,22 @@ export function setupParameters() {
     texts = isString(texts) ? JSON.parse(texts) as CustomTexts : texts as any as CustomTexts;
 
     keach(texts, (value: string[] | string, key) => {
-      set2(texts, key, isString(value) ? JSON.parse(value as string) : value);
+      value = isString(value) ? JSON.parse(value as string) : value as string;
+
+      // For texts, we need to remove the quotes if they are present, because the plugin parameters are marked as notes,
+      // what wraps the text value with quotes for allow special characters like \n.
+      if(key === "text" && isArray(value)) {
+        each2(value as string[], function (value, index, arrayLike){
+          let size = value.length >> 0;
+          if(size > 2 && value[0] === '"' && value[size - 1] === '"') {
+            arrayLike[index] = value.substring(1, size - 1);
+          }
+        });
+      }
+
+
+
+      set2(texts, key, value);
     });
 
     set2(
