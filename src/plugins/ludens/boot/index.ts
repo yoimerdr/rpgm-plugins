@@ -44,4 +44,18 @@ export function applyBoot() {
       }
     }
   )
+
+  method(
+    ImageManager,
+    "loadBitmap",
+    {
+      modifyParameters(folder, filename, hue, smooth) {
+        if(!Utils.isNwjs()) {
+          filename = encodeURIComponent(filename);
+        }
+        return [folder, filename, hue, smooth] as any;
+      }
+    }
+  );
+
 }
