@@ -7,6 +7,13 @@ import {doc} from "@jstls/components/shared/constants";
 import {apply} from "@jstls/core/functions/apply";
 import {get2, set2} from "@jstls/core/objects/handlers/getset";
 
+/**
+ * Applies boot modifications to RPG Maker's core systems for Ludens compatibility.
+ * - Patches font loading to handle Promise-based APIs.
+ * - Emits 'onload' event after title screen loads.
+ * - Notifies LudensBridge when loading completes.
+ * - Encodes image filenames in non-NWjs environments.
+ */
 export function applyBoot() {
   method(
     Graphics as KeyableObject,
