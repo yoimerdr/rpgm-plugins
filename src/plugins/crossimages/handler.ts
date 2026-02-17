@@ -59,7 +59,7 @@ const imagesKey = uid("m"),
         getImage(folder, filename) {
             const $this = this,
                 filepath = join(string(folder), string(filename)),
-                source = string(get2($this, imagesKey))
+                source = string(filepath)
                     .toLowerCase();
 
             if (!get2($this, setupKey))
@@ -76,12 +76,13 @@ const imagesKey = uid("m"),
                     ) as any
                 );
             }
-
-            result = get(
-                $this,
-                imagesKey,
-                source,
-            );
+            else {
+                result = get(
+                  $this,
+                  imagesKey,
+                  source,
+                );
+            }
 
             if (isString(result)) {
                 const path = new Filepath(result);
