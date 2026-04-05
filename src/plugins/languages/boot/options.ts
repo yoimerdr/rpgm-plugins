@@ -85,9 +85,10 @@ export function applyOptions() {
     getPrototype(Window_Command),
     "addCommand",
     {
-      modifyParameters(name, symbol, enable, ext) {
-        name = handler.getCustom("option", name)
-        return [name, symbol, enable, ext] as SafeParameters<Window_Command["addCommand"]>;
+      modifyParameters() {
+        const args = arguments as unknown as SafeParameters<Window_Command["addCommand"]>;
+        args[0] = handler.getCustom("option", args[0]);
+        return args;
       }
     }
   );

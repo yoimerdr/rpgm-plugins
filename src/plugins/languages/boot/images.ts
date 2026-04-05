@@ -19,9 +19,10 @@ export function applyImages() {
     ImageManager,
     "loadBitmap",
     {
-      modifyParameters(folder, filename, hue, smooth) {
-        filename = handler.getImage(folder, filename);
-        return [folder, filename, hue, smooth] as any
+      modifyParameters() {
+        const args = arguments as unknown as SafeParameters<((typeof ImageManager)["loadBitmap"])>;
+        args[1] = handler.getImage(args[0], args[1]);
+        return args;
       }
     }
   );
@@ -30,9 +31,10 @@ export function applyImages() {
     getPrototype(Game_Screen),
     "showPicture",
     {
-      modifyParameters(id, name, origin, x, y, scaleX, scaleY, opacity, blendMode) {
-        name = handler.getImage("img/pictures", name);
-        return [id, name, origin, x, y, scaleX, scaleY, opacity, blendMode] as SafeParameters<Game_Screen["showPicture"]>
+      modifyParameters() {
+        const args = arguments as unknown as SafeParameters<Game_Screen["showPicture"]>;
+        args[1] = handler.getImage("img/pictures", args[1]);
+        return args;
       }
     }
   );

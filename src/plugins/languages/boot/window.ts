@@ -18,15 +18,17 @@ export function applyWindow() {
     getPrototype(Window_Base),
     {
       drawTextEx: {
-        modifyParameters(text, x, y) {
-          text = handler.getCustom("text", text);
-          return [text, x, y] as SafeParameters<Window_Base["drawTextEx"]>
+        modifyParameters() {
+          const args = arguments as unknown as SafeParameters<Window_Base["drawTextEx"]>;
+          args[0] = handler.getCustom("text", args[0]);
+          return args;
         }
       },
       drawText: {
-        modifyParameters(text, x, y, maxWidth, align) {
-          text = handler.getCustom("text", text);
-          return [text, x, y, maxWidth, align] as SafeParameters<Window_Base["drawText"]>;
+        modifyParameters() {
+          const args = arguments as unknown as SafeParameters<Window_Base["drawText"]>;
+          args[0] = handler.getCustom("text", args[0]);
+          return args;
         }
       }
     }
