@@ -15,17 +15,20 @@ import {get2, set2} from "@jstls/core/objects/handlers/getset";
  * - Encodes image filenames in non-NWjs environments.
  */
 export function applyBoot() {
-  method(
-    Graphics as KeyableObject,
-    "_setupCssFontLoading",
-    {
-      replace(source) {
-        if (isFunction(doc.fonts.ready.then))
-          apply(source, this)
-        else set2(Graphics, "_cssFontLoading", undefined);
+  const fontLoadingFunctionKey = "_setupCssFontLoading";
+  if (Graphics && isFunction(get2(Graphics, fontLoadingFunctionKey))) {
+    method(
+      Graphics as KeyableObject,
+      fontLoadingFunctionKey,
+      {
+        replace(source) {
+          if (isFunction(doc.fonts.ready.then))
+            apply(source, this)
+          else set2(Graphics, "_cssFontLoading", undefined);
+        }
       }
-    }
-  )
+    )
+  }
 
   let loaded = false;
   method(
@@ -57,7 +60,7 @@ export function applyBoot() {
     "loadBitmap",
     {
       modifyParameters(folder, filename, hue, smooth) {
-        if(!Utils.isNwjs()) {
+        if (!Utils.isNwjs()) {
           filename = encodeURIComponent(filename);
         }
         return [folder, filename, hue, smooth] as any;
