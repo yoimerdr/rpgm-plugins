@@ -99,6 +99,9 @@ export interface Parameters {
   /** Which language files receive custom text entries */
   customTarget: CustomTextsTarget;
 
+  /** If true, failing to find a custom text in its target will search in others */
+  customFallbacks: boolean;
+
   /** Configurations for trimming texts using Regex before translation keys lookup */
   customTrimmers: CustomTextTrimmers;
 
@@ -122,6 +125,7 @@ export const PluginName = "YDP_Languages",
     imagePattern: "${filename}.${code}",
 
     enableCustom: true,
+    customFallbacks: false,
     customTrimmers: {
       option: undefined,
       status: undefined,
@@ -215,7 +219,8 @@ export function setupParameters() {
   each([
     "joinShowText",
     "enableImages",
-    "enableCustom"
+    "enableCustom",
+    "customFallbacks"
   ], function (key,) {
     set2(
       parameters,

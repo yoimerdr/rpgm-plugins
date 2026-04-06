@@ -14,7 +14,7 @@ import {troopFromTransform} from "@languages-plugin/mappers/troop";
 import {assignCommandToEvent} from "@languages-plugin/mappers/event";
 import {join, sep} from "@languages-plugin/shortcuts/env/path";
 import {KeyableObject} from "@jstls/types/core/objects";
-import {Maybe, MaybeString} from "@jstls/types/core";
+import {Maybe} from "@jstls/types/core";
 import {mapFromTransform} from "@languages-plugin/mappers/map";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 import {partialMethod} from "@languages-plugin/shortcuts/cls";
@@ -256,6 +256,22 @@ export function getImage(images: KeyableObject, folder: string, filename: string
   return {filename, success: false};
 }
 
+export function getCustomText($this: PluginHandler, key: string, query: string): string {
+  const customTexts = get2($this, customsKey);
+  let res: string = get(customTexts, key, query) as string;
+  if ((!res || res === query) && parameters.customFallbacks) {
+    const fallbacks = ["text", "option", "status"];
+    for (let i = 0; i < fallbacks.length; i++) {
+      const fb = fallbacks[i];
+      if (fb !== key) {
+        res = get(customTexts, fb, query) as string;
+        if (res && res !== query) break;
+      }
+    }
+  }
+  return res;
+}
+
 // instance the uids for properties
 const indexKey = uid("i"),
   languageKey = uid("l"),
@@ -309,29 +325,28 @@ const indexKey = uid("i"),
       if (!parameters.enableCustom || this.language.equals(DefaultLanguage))
         return name;
 
-      const customTexts = get2(this, customsKey),
-        trimmer = get2(parameters.customTrimmers, key) as RegExp;
+      if(!isString(name)) {
+        console.warn("[Languages Plugin] Custom text query must be a string. Received: ", name);
+        return name;
+      }
 
-      if (trimmer) {
+      let result = getCustomText(this, key, name);
+      if (result && result !== name) {
+        return result;
+      }
+
+      const trimmer = get2(parameters.customTrimmers, key) as RegExp;
+      if (trimmer && isString(name)) {
         const lookup = name.replace(trimmer, '');
         if (lookup !== name) {
-          let result = get(
-            customTexts,
-            key,
-            lookup
-          ) as MaybeString;
-
-          if (result && result != lookup && name.indexOf(lookup) !== -1) {
-            return name.replace(lookup, result);
+          result = getCustomText(this, key, lookup);
+          if (result && result !== lookup) {
+            return name.indexOf(lookup) !== -1 ? name.replace(lookup, result) : result;
           }
         }
       }
 
-      return get(
-        customTexts,
-        key,
-        name
-      ) || name;
+      return name;
     },
     getImage(folder, filename) {
       const $this = this,

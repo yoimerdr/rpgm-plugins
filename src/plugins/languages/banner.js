@@ -142,6 +142,13 @@
  * @parent enableCustom
  * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
  *
+ * @param customFallback
+ * @text Enable Custom Fallback
+ * @type boolean
+ * @desc If true, missing translations will be searched in other custom categories (text -> option -> status).
+ * @parent enableCustom
+ * @default false
+ *
  * @param customTargets
  * @text Custom Targets
  * @type combo
