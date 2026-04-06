@@ -16,6 +16,17 @@
 * @desc The text shown in the options menu.
 * @default Language
 */
+/*~struct~CustomTextTrimmers:
+* @param option
+* @text Game options/commands
+* @type string
+* @param status
+* @text Status values
+* @type string
+* @param text
+* @text General purpose texts
+* @type string
+* */
 /*:
  * @plugindesc
  * Lightweight localization system. tailored for reading and displaying localized content from pre-generated JSON files.
@@ -85,6 +96,13 @@
  * @type boolean
  * @desc Enable translations for texts that cannot be extracted automatically (e.g. dynamic show texts).
  * @default true
+ *
+ * @param customTrimmers
+ * @text Custom Texts Trimmers
+ * @type struct<CustomTextTrimmers>
+ * @desc Regex patterns to remove matching substrings from texts (like \I[1]) before looking for translations.
+ * @parent enableCustom
+ * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
  *
  * @help
  * =============================================================================

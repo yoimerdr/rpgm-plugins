@@ -7,6 +7,7 @@ import {LanguageOption} from "./models/language-option";
 import {join} from "@languages-plugin/shortcuts/env/path";
 import {bool} from "@languages-plugin/shortcuts/parameters";
 import {freeze} from "@jstls/core/shortcuts/object";
+import {Maybe} from "@jstls/types/core";
 
 /**
  * Controls when the plugin generates or updates language JSON files.
@@ -36,6 +37,22 @@ export interface CustomTexts {
 
   /** Custom texts for general text strings */
   readonly text: string[];
+}
+
+
+/**
+ * Trimmers configurations for custom texts.
+ * Allows developers to strip out specific patterns (like icons \I[9]) before translations.
+ */
+export interface CustomTextTrimmers {
+  /** Regex pattern to remove from option texts */
+  readonly option: Maybe<RegExp>;
+
+  /** Regex pattern to remove from status texts */
+  readonly status: Maybe<RegExp>;
+
+  /** Regex pattern to remove from general texts */
+  readonly text: Maybe<RegExp>;
 }
 
 /**
@@ -82,6 +99,9 @@ export interface Parameters {
   /** Which language files receive custom text entries */
   customTarget: CustomTextsTarget;
 
+  /** Configurations for trimming texts using Regex before translation keys lookup */
+  customTrimmers: CustomTextTrimmers;
+
   /** The custom texts configuration from plugin parameters */
   customTexts: CustomTexts;
 }
@@ -102,6 +122,11 @@ export const PluginName = "YDP_Languages",
     imagePattern: "${filename}.${code}",
 
     enableCustom: true,
+    customTrimmers: {
+      option: undefined,
+      status: undefined,
+      text: undefined
+    },
     customTexts: {},
     customTarget: "no-default",
   } as Parameters;
@@ -151,6 +176,26 @@ export function setupParameters() {
       set2(texts, key, value);
     });
 
+    let trimmersParam = params.customTrimmers;
+    let trimmersParsed = isString(trimmersParam) ? JSON.parse(trimmersParam) : { };
+    let trimmers: Record<string, Maybe<RegExp>> = { };
+
+    keach(trimmersParsed, (value: string, key) => {
+      if (value) {
+        try {
+          trimmers[key as string] = new RegExp(value, 'g');
+        } catch (e) {
+          console.warn(`Invalid regex trimmer for custom text type '${key as string}': ${value}`);
+        }
+      }
+    });
+
+    set2(
+      parameters,
+      "customTrimmers",
+      trimmers
+    );
+
     set2(
       parameters,
       "customTexts",
@@ -179,4 +224,5 @@ export function setupParameters() {
     )
   })
 
+  Object.freeze(parameters);
 }

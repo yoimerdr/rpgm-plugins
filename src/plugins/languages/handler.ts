@@ -14,7 +14,7 @@ import {troopFromTransform} from "@languages-plugin/mappers/troop";
 import {assignCommandToEvent} from "@languages-plugin/mappers/event";
 import {join, sep} from "@languages-plugin/shortcuts/env/path";
 import {KeyableObject} from "@jstls/types/core/objects";
-import {Maybe} from "@jstls/types/core";
+import {Maybe, MaybeString} from "@jstls/types/core";
 import {mapFromTransform} from "@languages-plugin/mappers/map";
 import {LanguageSource, MapSource} from "@languages-plugin/models/source";
 import {partialMethod} from "@languages-plugin/shortcuts/cls";
@@ -77,7 +77,7 @@ export interface PluginHandler {
    * @param name - The key identifying the custom text entry
    * @returns The translated text, or the original name if no translation exists
    */
-  getCustom(key: string, name: string): string;
+  getCustom(key: "option" | "status" | "text", name: string): string;
 
   /**
    * Resolves the appropriate image filename for the current language.
@@ -309,8 +309,26 @@ const indexKey = uid("i"),
       if (!parameters.enableCustom || this.language.equals(DefaultLanguage))
         return name;
 
+      const customTexts = get2(this, customsKey),
+        trimmer = get2(parameters.customTrimmers, key) as RegExp;
+
+      if (trimmer) {
+        const lookup = name.replace(trimmer, '');
+        if (lookup !== name) {
+          let result = get(
+            customTexts,
+            key,
+            lookup
+          ) as MaybeString;
+
+          if (result && result != lookup && name.indexOf(lookup) !== -1) {
+            return name.replace(lookup, result);
+          }
+        }
+      }
+
       return get(
-        get2(this, customsKey),
+        customTexts,
         key,
         name
       ) || name;

@@ -27,6 +27,17 @@
 * @text General purpose texts
 * @type note[]
 * */
+/*~struct~CustomTextTrimmers:
+* @param option
+* @text Game options/commands
+* @type string
+* @param status
+* @text Status values
+* @type string
+* @param text
+* @text General purpose texts
+* @type string
+* */
 /*:
  * @plugindesc
  * A plugin for game localization. Allows text translation via JSON files, automatic text extraction, and dynamic image switching.
@@ -123,6 +134,13 @@
  * @desc Custom texts to be translated.
  * @parent enableCustom
  * @default {"option":"[\"Save\", \"Load\", \"Cancel\", \"Delete\", \"Exit\", \"New Game\", \"Continue\", \"Credits\", \"Options\", \"Exit\"]","status":"[\"On\", \"Off\"]","text":"[\"\\\"Please select a file slot.\\\"\",\"\\\"Loads the data from the saved game.\\\"\"]"}
+ *
+ * @param customTrimmers
+ * @text Custom Texts Trimmers
+ * @type struct<CustomTextTrimmers>
+ * @desc Regex patterns to remove matching substrings from texts (like \I[1]) before looking for translations.
+ * @parent enableCustom
+ * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
  *
  * @param customTargets
  * @text Custom Targets
