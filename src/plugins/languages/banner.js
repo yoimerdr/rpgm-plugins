@@ -158,6 +158,44 @@
  * @default no-default
  * @parent enableCustom
  *
+ * @param enableEscapeTag
+ * @text Enable Escape Tags
+ * @type boolean
+ * @desc Enable \L[KEY] style escape tags for inline translations.
+ * @parent enableCustom
+ * @default false
+ *
+ * @param escapeTagKey
+ * @text Escape Tag Key
+ * @type string
+ * @desc The identifier character for escape tags (e.g. "L" for \L[KEY]).
+ * @default L
+ * @parent enableEscapeTag
+ *
+ * @param enableWrappingTag
+ * @text Enable Wrapping Tags
+ * @type boolean
+ * @desc Enable wrapping style tags for inline translations (e.g. {L}Text{/L}).
+ * @parent enableCustom
+ * @default false
+ *
+ * @param wrappingTagKey
+ * @text Wrapping Tag Key
+ * @type string
+ * @desc The identifier character for wrapping tags (e.g. "L" for {L}Text{/L}).
+ * @default L
+ * @parent enableWrappingTag
+ *
+ * @param wrappingTagFormat
+ * @text Wrapping Tag Format
+ * @type combo
+ * @option curly
+ * @option square
+ * @option angle
+ * @desc Delimiter style: curly = {L}...{/L}, square = [L]...[/L], angle = <L>...</L>.
+ * @default curly
+ * @parent enableWrappingTag
+ *
  * @help
  * =============================================================================
  * __   ______  ____    _
@@ -281,6 +319,35 @@
  *     "Loads the data from the saved game.": "Loads the data from the saved game."
  *   }
  * }
+ *
+ * =============================================================================
+ * Translation Tags
+ * =============================================================================
+ * You can embed translation lookups directly inside text strings using two
+ * configurable tag systems.
+ *
+ * --- Escape Tags ---
+ * Syntax:  \L[KEY]   (where L is the configured Escape Tag Key)
+ *
+ * Use this to reference a custom text entry by its key.
+ * Example:  \L[MSG_HELLO]  =>  Looks up "MSG_HELLO" in the custom texts.
+ *
+ * --- Wrapping Tags ---
+ * Syntax:  {L}Text{/L}   (delimiters depend on the Wrapping Tag Format)
+ *
+ * Use this to mark a piece of source text for translation.
+ * The text between the tags is used as the lookup key.
+ *
+ * Available formats:
+ *   curly:   {L}Hello{/L}
+ *   square:  [L]Hello[/L]
+ *   angle:   <L>Hello</L>
+ *
+ * Both tag systems can be used simultaneously in the same text string.
+ * Example:  \V[1]: {L}Score{/L}
+ *
+ * If a tag's key is not found in the translation file, the key itself
+ * (or the source text) is displayed as a graceful fallback.
  *
  * =============================================================================
  */

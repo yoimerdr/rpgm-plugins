@@ -25,6 +25,14 @@ export type GenerateLanguageMode = "auto" | "always" | "none";
 export type CustomTextsTarget = "all" | "no-default";
 
 /**
+ * Controls the delimiter pair used for wrapping translation tags.
+ * - "curly":  {L}Text{/L}
+ * - "square": [L]Text[/L]
+ * - "angle":  <L>Text</L>
+ */
+export type WrappingTagFormat = "curly" | "square" | "angle";
+
+/**
  * Configuration for custom text entries that can be translated.
  * Custom texts allow translating strings that aren't in the standard RPG Maker database.
  */
@@ -107,6 +115,21 @@ export interface Parameters {
 
   /** The custom texts configuration from plugin parameters */
   customTexts: CustomTexts;
+
+  /** Whether \Key[ID] escape tags are enabled */
+  enableEscapeTag: boolean;
+
+  /** The character used as the escape tag identifier (e.g. "L" for \L[ID]) */
+  escapeTagKey: string;
+
+  /** Whether wrapping (source) tags are enabled */
+  enableWrappingTag: boolean;
+
+  /** The character used as the wrapping tag identifier (e.g. "L" for {L}Text{/L}) */
+  wrappingTagKey: string;
+
+  /** The delimiter format for wrapping tags */
+  wrappingTagFormat: WrappingTagFormat;
 }
 
 export const PluginName = "YDP_Languages",
@@ -133,6 +156,12 @@ export const PluginName = "YDP_Languages",
     },
     customTexts: {},
     customTarget: "no-default",
+
+    enableEscapeTag: false,
+    escapeTagKey: "L",
+    enableWrappingTag: false,
+    wrappingTagKey: "L",
+    wrappingTagFormat: "curly",
   } as Parameters;
 
 export function setupParameters() {
@@ -220,7 +249,9 @@ export function setupParameters() {
     "joinShowText",
     "enableImages",
     "enableCustom",
-    "customFallbacks"
+    "customFallbacks",
+    "enableEscapeTag",
+    "enableWrappingTag"
   ], function (key,) {
     set2(
       parameters,
