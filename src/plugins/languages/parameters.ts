@@ -8,6 +8,7 @@ import {join} from "@languages-plugin/shortcuts/env/path";
 import {bool} from "@languages-plugin/shortcuts/parameters";
 import {freeze} from "@jstls/core/shortcuts/object";
 import {Maybe} from "@jstls/types/core";
+import {KeyableObject} from "@jstls/types/core/objects";
 
 /**
  * Controls when the plugin generates or updates language JSON files.
@@ -164,11 +165,18 @@ export const PluginName = "YDP_Languages",
     wrappingTagFormat: "curly",
   } as Parameters;
 
-export function setupParameters() {
-  // load the plugin parameters
-  const params = PluginManager.parameters(PluginName) || {};
+/**
+ * Parses raw plugin parameters from RPG Maker and maps them to the structured Parameters interface.
+ * This function handles type conversions, default values, and validation of the parameters.
+ *
+ * @param raw The raw parameters object obtained from PluginManager.parameters()
+ * @return A structured Parameters object with all plugin settings properly typed and validated.
+ * */
+export function parseParameters(raw: KeyableObject): Parameters {
+  const parameters = {} as Parameters;
 
-  assign(parameters, params);
+  assign(parameters, raw as Partial<Parameters>);
+
   // validates the separator type for the join.
   parameters.joinSeparatorType === "unescaped" &&
   set2(parameters, "joinSeparator", JSON.parse(concat("\"", parameters.joinSeparator, "\"")));
@@ -178,15 +186,15 @@ export function setupParameters() {
     set2(
       parameters,
       "languages",
-      (getIf(JSON.parse(params.languages), isArray, returns([])))
+      (getIf(JSON.parse(raw.languages), isArray, returns([])))
         .map(function (value: string) {
           return new LanguageOption(JSON.parse(value));
         })
     );
 
     // maps the custom texts parameter
-    let texts: string | CustomTexts = params.customTexts
-    texts = isString(texts) ? JSON.parse(texts) as CustomTexts : texts as any as CustomTexts;
+    let texts: string | CustomTexts = raw.customTexts
+    texts = isString(texts) ? JSON.parse(texts as string) as CustomTexts : texts as any as CustomTexts;
 
     keach(texts, (value: string[] | string, key) => {
       value = isString(value) ? JSON.parse(value as string) : value as string;
@@ -209,9 +217,9 @@ export function setupParameters() {
       set2(texts, key, value);
     });
 
-    let trimmersParam = params.customTrimmers;
-    let trimmersParsed = isString(trimmersParam) ? JSON.parse(trimmersParam) : { };
-    let trimmers: Record<string, Maybe<RegExp>> = { };
+    let trimmersParam = raw.customTrimmers;
+    let trimmersParsed = isString(trimmersParam) ? JSON.parse(trimmersParam) : {};
+    let trimmers: Record<string, Maybe<RegExp>> = {};
 
     keach(trimmersParsed, (value: string, key) => {
       if (value) {
@@ -243,7 +251,6 @@ export function setupParameters() {
     set2(parameters, "imagePattern", "${filename}.${code}");
   }
 
-
   // maps the boolean parameters
   each([
     "joinShowText",
@@ -256,9 +263,24 @@ export function setupParameters() {
     set2(
       parameters,
       key,
-      bool(get2(params, key) || "true")
+      bool(get2(raw, key) || "false")
     )
   })
+
+  return parameters;
+}
+
+/**
+ * Loads and processes the plugin parameters from RPG Maker's PluginManager, then assigns them to the exported `parameters` object.
+ *
+ * This function should be called during plugin initialization to ensure that all parameters are properly set up and frozen for immutability.
+ * */
+export function setupParameters() {
+  // load the plugin parameters
+  const params = PluginManager.parameters(PluginName) || {},
+    parsed = parseParameters(params);
+
+  assign(parameters, parsed);
 
   Object.freeze(parameters);
 }
