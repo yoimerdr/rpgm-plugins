@@ -12,7 +12,9 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:core": "vitest run --project core",
-    "test:core:cov": "vitest run --project core --coverage"
+    "test:core:cov": "vitest run --project core --coverage",
+    "test:languages": "vitest run --project languages",
+    "test:languages:cov": "vitest run --project languages --coverage"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",
