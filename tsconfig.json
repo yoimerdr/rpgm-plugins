@@ -6,7 +6,7 @@
       "dom"
     ],
     "moduleResolution": "node10",
-//    "module": "preserve",
+    //    "module": "preserve",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -21,6 +21,9 @@
       "@core-plugin/*": [
         "./src/plugins/core/*"
       ],
+      "@tests/*": [
+        "./tests/*"
+      ],
       "@languages-plugin/*": [
         "./src/plugins/languages/*"
       ]
@@ -28,7 +31,8 @@
   },
   "include": [
     "src",
-    "lib"
+    "lib",
+    "tests"
   ],
   "exclude": [
     "node_modules"
