@@ -77,7 +77,7 @@ export interface PluginHandler {
    * @param name - The key identifying the custom text entry
    * @returns The translated text, or the original name if no translation exists
    */
-  getCustom(key: string, name: string): string;
+  getCustom(key: "option" | "status" | "text", name: string): string;
 
   /**
    * Resolves the appropriate image filename for the current language.
@@ -256,6 +256,74 @@ export function getImage(images: KeyableObject, folder: string, filename: string
   return {filename, success: false};
 }
 
+export function getCustomText($this: PluginHandler, key: string, query: string): string {
+  const customTexts = get2($this, customsKey);
+  let res: string = get(customTexts, key, query) as string;
+  if ((!res || res === query) && parameters.customFallbacks) {
+    const fallbacks = ["text", "option", "status"];
+    for (let i = 0; i < fallbacks.length; i++) {
+      const fb = fallbacks[i];
+      if (fb !== key) {
+        res = get(customTexts, fb, query) as string;
+        if (res && res !== query) break;
+      }
+    }
+  }
+  return res;
+}
+
+/**
+ * Resolves translation tags embedded in text strings.
+ *
+ * Supports two tag modes:
+ * - **Escape tags**: `\x1bL[KEY]` — looks up KEY in the active language's custom texts.
+ * - **Wrapping tags**: `{L}Text{/L}` (or square/angle variants) — looks up Text as a key.
+ *
+ * Both modes are independently toggleable via plugin parameters.
+ *
+ * @param $this  - The PluginHandler instance for custom-text lookups.
+ * @param key    - The custom-text category ("option" | "status" | "text").
+ * @param text   - The raw text that may contain translation tags.
+ * @returns The text with all recognised tags replaced by their translations.
+ */
+function processTags($this: PluginHandler, key: string, text: string): string {
+  if (!isString(text)) return text;
+
+  // --- Escape tags: \x1b<KEY>[ID] ---
+  if (parameters.enableEscapeTag) {
+    const ek = parameters.escapeTagKey;
+    // After RPG Maker's convertEscapeCharacters the backslash becomes \x1b
+    const escapeRe = new RegExp('\\x1b' + ek + '\\[([^\\]]+)\\]', 'gi');
+    text = text.replace(escapeRe, function (_match: string, id: string) {
+      const resolved = getCustomText($this, key, id);
+      return (resolved && resolved !== id) ? resolved : id;
+    });
+  }
+
+  // --- Wrapping tags: {L}Text{/L}  |  [L]Text[/L]  |  <L>Text</L> ---
+  if (parameters.enableWrappingTag) {
+    const wk = parameters.wrappingTagKey;
+    let wrapRe: RegExp;
+    switch (parameters.wrappingTagFormat) {
+      case "square":
+        wrapRe = new RegExp('\\[' + wk + '\\](.*?)\\[\\/' + wk + '\\]', 'gi');
+        break;
+      case "angle":
+        wrapRe = new RegExp('<' + wk + '>(.*?)<\\/' + wk + '>', 'gi');
+        break;
+      default: // curly
+        wrapRe = new RegExp('\\{' + wk + '\\}(.*?)\\{\\/' + wk + '\\}', 'gi');
+        break;
+    }
+    text = text.replace(wrapRe, function (_match: string, source: string) {
+      const resolved = getCustomText($this, key, source);
+      return (resolved && resolved !== source) ? resolved : source;
+    });
+  }
+
+  return text;
+}
+
 // instance the uids for properties
 const indexKey = uid("i"),
   languageKey = uid("l"),
@@ -309,11 +377,30 @@ const indexKey = uid("i"),
       if (!parameters.enableCustom || this.language.equals(DefaultLanguage))
         return name;
 
-      return get(
-        get2(this, customsKey),
-        key,
-        name
-      ) || name;
+      if(!isString(name)) {
+        console.warn("[Languages Plugin] Custom text query must be a string. Received: ", name);
+        return name;
+      }
+
+      let result = getCustomText(this, key, name);
+      if (result && result !== name) {
+        return processTags(this, key, result);
+      }
+
+      const trimmer = get2(parameters.customTrimmers, key) as RegExp;
+      if (trimmer && isString(name)) {
+        const lookup = name.replace(trimmer, '');
+        if (lookup !== name) {
+          result = getCustomText(this, key, lookup);
+          if (result && result !== lookup) {
+            const translated = name.indexOf(lookup) !== -1 ? name.replace(lookup, result) : result;
+            return processTags(this, key, translated);
+          }
+        }
+      }
+
+      // Even when no custom-text match was found, process inline tags.
+      return processTags(this, key, name);
     },
     getImage(folder, filename) {
       const $this = this,

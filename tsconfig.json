@@ -32,7 +32,7 @@
       ],
       "@languages-plugin/*": [
         "./src/plugins/languages/*"
-      ]
+      ],
     }
   },
   "include": [

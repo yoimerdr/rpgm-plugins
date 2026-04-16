@@ -54,17 +54,9 @@ export function assignCommandToEvent(commands: EventTextCommand, events: (MapEve
   }
 
   function assignJoinedParameters(command: TextCommand) {
-    let reducerIndex = 0,
-      source = command.split();
+    let source = command.split();
 
     each(source.parameters, function (parameter, index) {
-      if (parameter.isEmpty()) {
-        reducerIndex++;
-        return;
-      }
-
-      index -= reducerIndex;
-
       if (index.isFromUntil(0, command.length!)) {
         const item = getEventItem(command, index);
         item && (item.parameters[0] = parameter);
@@ -153,6 +145,7 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
               // put the first parameter of current command params
               const first = string(params.first());
               command.parameters.push(first);
+              (index === page.list.length - 1) && appendCommand(command.pageIndex, command.index)
             } else {
               // if command code is not for show text, check if join show texts is active for push current
               parameters.joinShowText && appendCommand(command.pageIndex, command.index);
