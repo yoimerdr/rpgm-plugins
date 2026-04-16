@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { logger } from '@core-plugin/modules/env/logger';
-import { Filepath } from '@core-plugin/modules/env/path';
+import {describe, expect, it, vi} from 'vitest';
+import {logger} from '@core-plugin/modules/env/logger';
+import {Filepath} from '@core-plugin/modules/env/path';
 import * as fsModule from '@core-plugin/modules/env/fs';
 
 describe('Logger Environment module', () => {

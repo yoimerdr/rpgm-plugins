@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { properties } from '@core-plugin/modules/properties';
+import {describe, expect, it} from 'vitest';
+import {properties} from '@core-plugin/modules/properties';
 
 declare const global: any;
 

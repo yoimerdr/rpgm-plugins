@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { setupParameters, PluginName } from '@core-plugin/parameters';
+import {describe, expect, it} from 'vitest';
+import {PluginName, setupParameters} from '@core-plugin/parameters';
 
 describe('Root Plugin Parameters Module', () => {
   it('exposes PluginName statically', () => {

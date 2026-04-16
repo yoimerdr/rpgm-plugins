@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { env } from '@core-plugin/modules/env';
+import {describe, expect, it} from 'vitest';
+import {env} from '@core-plugin/modules/env';
 
 describe('Environment Module', () => {
   it('exposes file system manager', () => {

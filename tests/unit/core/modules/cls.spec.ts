@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { cls } from '@core-plugin/modules/cls';
+import {describe, expect, it} from 'vitest';
+import {cls} from '@core-plugin/modules/cls';
 
 describe('Classes (cls) Module', () => {
   it('should construct functional classes via funclass', () => {

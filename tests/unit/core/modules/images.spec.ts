@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { images } from '@core-plugin/modules/images';
-import type { FileManager, FileManagerState } from '@core-plugin/modules/env/fs';
+import {describe, expect, it, vi} from 'vitest';
+import {images} from '@core-plugin/modules/images';
+import type {FileManager, FileManagerState} from '@core-plugin/modules/env/fs';
 
 describe('Images Module', () => {
   it('ext configuration exposes raw and encoded definitions', () => {

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { iterables } from '@core-plugin/modules/iterables';
+import {describe, expect, it, vi} from 'vitest';
+import {iterables} from '@core-plugin/modules/iterables';
 
 describe('Iterables Module', () => {
   it('each should iterate over arrays', () => {

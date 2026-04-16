@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {requests} from '@core-plugin/modules/requests';
 
 declare const global: any;

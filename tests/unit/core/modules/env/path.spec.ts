@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { path } from '@core-plugin/modules/env/path';
+import {describe, expect, it, vi} from 'vitest';
+import {path} from '@core-plugin/modules/env/path';
 
 describe('Path Environment module', () => {
   it('exposes sep and utilities', () => {

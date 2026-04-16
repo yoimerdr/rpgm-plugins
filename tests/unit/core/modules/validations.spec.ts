@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { validations } from '@core-plugin/modules/validations';
+import {describe, expect, it} from 'vitest';
+import {validations} from '@core-plugin/modules/validations';
 
 describe('Validations Module', () => {
   it('isString correctly identifies strings', () => {

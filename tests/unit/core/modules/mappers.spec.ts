@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { mappers } from '@core-plugin/modules/mappers';
+import {describe, expect, it} from 'vitest';
+import {mappers} from '@core-plugin/modules/mappers';
 
 describe('Mappers Module', () => {
   it('exposes set and setTo property transformations', () => {

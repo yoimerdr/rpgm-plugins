@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parameters } from '@core-plugin/modules/parameters';
+import {describe, expect, it} from 'vitest';
+import {parameters} from '@core-plugin/modules/parameters';
 
 describe('Internal Parameters module', () => {
   it('boolParameter processes logic constraints', () => {

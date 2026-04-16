@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { exceptions } from '@core-plugin/modules/exceptions';
+import {describe, expect, it} from 'vitest';
+import {exceptions} from '@core-plugin/modules/exceptions';
 
 describe('Exceptions Module', () => {
   it('instantiates IllegalArgumentError correctly', () => {

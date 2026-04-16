@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { functions } from '@core-plugin/modules/functions';
+import {describe, expect, it} from 'vitest';
+import {functions} from '@core-plugin/modules/functions';
 
 describe('Functions Module', () => {
   it('should have a noact operation', () => {
