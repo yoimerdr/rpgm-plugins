@@ -104,7 +104,7 @@
  * @parent enableCustom
  * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
  *
- * @param customFallback
+ * @param customFallbacks
  * @text Enable Custom Fallback
  * @type boolean
  * @desc If true, missing translations will be searched in other custom categories (text -> option -> status).
