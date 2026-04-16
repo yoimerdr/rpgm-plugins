@@ -145,6 +145,7 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
               // put the first parameter of current command params
               const first = string(params.first());
               command.parameters.push(first);
+              (index === page.list.length - 1) && appendCommand(command.pageIndex, command.index)
             } else {
               // if command code is not for show text, check if join show texts is active for push current
               parameters.joinShowText && appendCommand(command.pageIndex, command.index);
