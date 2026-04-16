@@ -8,8 +8,6 @@ describe('Root Plugin Parameters Module', () => {
   });
 
   it('setupParameters reads global PluginManager context safely', () => {
-    // In our mocks.ts, we mock PluginManager.parameters
-    // so setupParameters should not throw.
     expect(() => setupParameters()).not.toThrow();
   });
 });

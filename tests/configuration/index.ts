@@ -1,2 +1,2 @@
 export * from './config';
-export * from './mocks';
+export * from './mocks/environment';
