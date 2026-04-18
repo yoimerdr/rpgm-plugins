@@ -209,6 +209,33 @@ describe('handler.getCustom', () => {
     });
   });
 
+  it("clean tags when language is Default", () => {
+    parameters.languages = [DefaultLanguage];
+    handler.load(0);
+    parameters.enableWrappingTag = true;
+    parameters.wrappingTagFormat = 'square';
+
+    const result = handler.getCustom('text', '[L]NON_EXISTENT_KEY[/L]');
+    expect(result).toBe('NON_EXISTENT_KEY');
+  })
+
+  it('processes nested square wrapping tags when enabled', () => {
+    const fr = mkLang('fr', 'Francais', 'Langue');
+    parameters.languages = [fr];
+    handler.load(0);
+    parameters.enableWrappingTag = true;
+    parameters.wrappingTagFormat = 'square';
+
+    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
+      custom: {text: {HELLO_KEY: '[L]Hello[/L]', Hello: "Bounjour"}, option: {}, status: {}}
+    }));
+
+    return loadLanguageFile(fr).then(() => {
+      const result = handler.getCustom('text', '[L]HELLO_KEY[/L] + fin');
+      expect(result).toBe('Bounjour + fin');
+    });
+  });
+
   it('processes angle wrapping tags when enabled', () => {
     const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
