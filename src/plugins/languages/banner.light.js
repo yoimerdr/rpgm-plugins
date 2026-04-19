@@ -102,7 +102,7 @@
  * @type struct<CustomTextTrimmers>
  * @desc Regex patterns to remove matching substrings from texts (like \I[1]) before looking for translations.
  * @parent enableCustom
- * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
+ * @default {"option":"^(\\\\[A-Za-z]+\\[\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\d+\\])+"}
  *
  * @param customFallbacks
  * @text Enable Custom Fallback
