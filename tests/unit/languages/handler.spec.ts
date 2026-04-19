@@ -125,9 +125,31 @@ describe('handler.load', () => {
 
 describe('handler.getCustom', () => {
   const en = mkLang('en', 'English', 'Language');
+  const fr = mkLang('fr', 'Francais', 'Langue');
+  const es = mkLang('es', 'Español', 'Idioma');
+  const sharedCustomSource = makeLanguageSource({
+    custom: {
+      text: {
+        GREETING: 'Hola mundo',
+        BONJOUR_KEY: 'Bonjour',
+        CIAO_KEY: 'Ciao',
+        HALLO_KEY: 'Hallo',
+        HELLO_NESTED_KEY: '[L]Hello[/L]',
+        Hello: 'Bounjour',
+        'This is a\n multiline text': 'Esta es un\n texto multilinea',
+        key: 'valor',
+      },
+      option: {
+        Save: 'Guardar',
+      },
+      status: {},
+    },
+  });
 
   beforeEach(() => {
     resetLanguageTestParameters();
+    fetchJsonMock.mockReset();
+    fetchJsonMock.mockResolvedValue(sharedCustomSource);
     parameters.languages = [en];
     handler.load(0);
   });
@@ -158,15 +180,10 @@ describe('handler.getCustom', () => {
   });
 
   it('processes escape tags when enabled', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     handler.load(0);
     parameters.enableEscapeTag = true;
     parameters.escapeTagKey = 'L';
-
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {GREETING: 'Hola mundo'}, option: {}, status: {}}
-    }));
 
     return loadLanguageFile(fr).then(() => {
       const result = handler.getCustom('text', 'Intro: \x1bL[GREETING]!');
@@ -175,36 +192,26 @@ describe('handler.getCustom', () => {
   });
 
   it('processes curly wrapping tags when enabled', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     handler.load(0);
     parameters.enableWrappingTag = true;
     parameters.wrappingTagFormat = 'curly';
     parameters.wrappingTagKey = 'L';
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {HELLO_KEY: 'Bonjour'}, option: {}, status: {}}
-    }));
-
     return loadLanguageFile(fr).then(() => {
-      const result = handler.getCustom('text', '->{L}HELLO_KEY{/L}<-');
+      const result = handler.getCustom('text', '->{L}BONJOUR_KEY{/L}<-');
       expect(result).toBe('->Bonjour<-');
     });
   });
 
   it('processes square wrapping tags when enabled', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     handler.load(0);
     parameters.enableWrappingTag = true;
     parameters.wrappingTagFormat = 'square';
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {HELLO_KEY: 'Ciao'}, option: {}, status: {}}
-    }));
-
     return loadLanguageFile(fr).then(() => {
-      const result = handler.getCustom('text', '[L]HELLO_KEY[/L] + fin');
+      const result = handler.getCustom('text', '[L]CIAO_KEY[/L] + fin');
       expect(result).toBe('Ciao + fin');
     });
   });
@@ -220,49 +227,34 @@ describe('handler.getCustom', () => {
   })
 
   it('processes nested square wrapping tags when enabled', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     handler.load(0);
     parameters.enableWrappingTag = true;
     parameters.wrappingTagFormat = 'square';
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {HELLO_KEY: '[L]Hello[/L]', Hello: "Bounjour"}, option: {}, status: {}}
-    }));
-
     return loadLanguageFile(fr).then(() => {
-      const result = handler.getCustom('text', '[L]HELLO_KEY[/L] + fin');
+      const result = handler.getCustom('text', '[L]HELLO_NESTED_KEY[/L] + fin');
       expect(result).toBe('Bounjour + fin');
     });
   });
 
   it('processes angle wrapping tags when enabled', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     handler.load(0);
     parameters.enableWrappingTag = true;
     parameters.wrappingTagFormat = 'angle';
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {HELLO_KEY: 'Hallo'}, option: {}, status: {}}
-    }));
-
     return loadLanguageFile(fr).then(() => {
-      const result = handler.getCustom('text', '<L>HELLO_KEY</L>!');
+      const result = handler.getCustom('text', '<L>HALLO_KEY</L>!');
       expect(result).toBe('Hallo!');
     });
   });
 
   it('processes tag on multiline key text', () => {
-    const es = mkLang('es', 'Español', 'Idioma');
     parameters.languages = [es];
     handler.load(0);
     parameters.enableEscapeTag = true;
     parameters.escapeTagKey = 'L';
-
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {"This is a\n multiline text": 'Esta es un\n texto multilinea'}, option: {}, status: {}}
-    }));
 
     return loadLanguageFile(es).then(() => {
       const result = handler.getCustom('text', 'Intro: \x1bL[This is a\n multiline text]!');
@@ -271,31 +263,42 @@ describe('handler.getCustom', () => {
   });
 
   it('process wrapped tags on multiline key text', () => {
-    const es = mkLang('es', 'Español', 'Idioma');
     parameters.languages = [es];
     handler.load(0);
     parameters.enableWrappingTag = true;
     parameters.wrappingTagFormat = 'square';
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: {text: {"This is a\n multiline text": 'Esta es un\n texto multilinea'}, option: {}, status: {}}
-    }));
-
     return loadLanguageFile(es).then(() => {
       const result = handler.getCustom('text', '[L]This is a\n multiline text[/L]');
       expect(result).toBe('Esta es un\n texto multilinea');
     });
+  });
+
+  it("clean tags when key is not valid text", () => {
+    parameters.languages = [fr];
+    parameters.enableCustom = true;
+    parameters.customFallbacks = false;
+    parameters.enableEscapeTag = false;
+    parameters.enableWrappingTag = true;
+    parameters.wrappingTagFormat = 'square';
+
+    handler.load(0);
+
+    return loadLanguageFile(fr).then(() => {
+      const result = handler.getCustom('text', '+[L][L]0%[/L][/L]');
+      expect(result).toBe('+0%');
+    });
+
   })
 
   it('applies trimmer before lookup', () => {
     parameters.customTrimmers = { text: /\\\I\[\d+\]/g } as CustomTextTrimmers;
-    const result = handler.getCustom('text', 'key');
+    const result = handler.getCustom('text', 'trim_only_key');
     expect(typeof result).toBe('string');
-    expect(result).toBe("key");
+    expect(result).toBe('trim_only_key');
   });
 
   it('applies trimmer replacement when lookup without trim fails', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     parameters.enableCustom = true;
     parameters.customFallbacks = false;
@@ -305,10 +308,6 @@ describe('handler.getCustom', () => {
 
     handler.load(0);
 
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: { text: { key: 'valor' }, option: {}, status: {} },
-    }));
-
     return loadLanguageFile(fr).then(() => {
       const result = handler.getCustom('text', '***key***');
       expect(result).toBe('***valor***');
@@ -316,7 +315,6 @@ describe('handler.getCustom', () => {
   });
 
   it('supports fallback custom text lookups across categories', () => {
-    const fr = mkLang('fr', 'Francais', 'Langue');
     parameters.languages = [fr];
     parameters.enableCustom = true;
     parameters.customFallbacks = true;
@@ -325,10 +323,6 @@ describe('handler.getCustom', () => {
     parameters.customTrimmers = {} as CustomTextTrimmers;
 
     handler.load(0);
-
-    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
-      custom: { text: {}, option: { Save: 'Guardar' }, status: {} },
-    }));
 
     return loadLanguageFile(fr).then(() => {
       const result = handler.getCustom('text', 'Save');
