@@ -308,13 +308,13 @@ function processTags($this: PluginHandler, key: string, text: string): string {
     let wrapRe: RegExp;
     switch (parameters.wrappingTagFormat) {
       case "square":
-        wrapRe = new RegExp('\\[' + wk + '\\](.*?)\\[\\/' + wk + '\\]', 'gi');
+        wrapRe = new RegExp('\\[' + wk + '\\]([\\s\\S]*?)\\[\\/' + wk + '\\]', 'gi');
         break;
       case "angle":
-        wrapRe = new RegExp('<' + wk + '>(.*?)<\\/' + wk + '>', 'gi');
+        wrapRe = new RegExp('<' + wk + '>([\\s\\S]*?)<\\/' + wk + '>', 'gi');
         break;
       default: // curly
-        wrapRe = new RegExp('\\{' + wk + '\\}(.*?)\\{\\/' + wk + '\\}', 'gi');
+        wrapRe = new RegExp('\\{' + wk + '\\}([\\s\\S]*?)\\{\\/' + wk + '\\}', 'gi');
         break;
     }
     text = text.replace(wrapRe, function (_match: string, source: string) {
