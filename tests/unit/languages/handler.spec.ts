@@ -253,6 +253,40 @@ describe('handler.getCustom', () => {
     });
   });
 
+  it('processes tag on multiline key text', () => {
+    const es = mkLang('es', 'Español', 'Idioma');
+    parameters.languages = [es];
+    handler.load(0);
+    parameters.enableEscapeTag = true;
+    parameters.escapeTagKey = 'L';
+
+    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
+      custom: {text: {"This is a\n multiline text": 'Esta es un\n texto multilinea'}, option: {}, status: {}}
+    }));
+
+    return loadLanguageFile(es).then(() => {
+      const result = handler.getCustom('text', 'Intro: \x1bL[This is a\n multiline text]!');
+      expect(result).toBe('Intro: Esta es un\n texto multilinea!');
+    });
+  });
+
+  it('process wrapped tags on multiline key text', () => {
+    const es = mkLang('es', 'Español', 'Idioma');
+    parameters.languages = [es];
+    handler.load(0);
+    parameters.enableWrappingTag = true;
+    parameters.wrappingTagFormat = 'square';
+
+    fetchJsonMock.mockResolvedValueOnce(makeLanguageSource({
+      custom: {text: {"This is a\n multiline text": 'Esta es un\n texto multilinea'}, option: {}, status: {}}
+    }));
+
+    return loadLanguageFile(es).then(() => {
+      const result = handler.getCustom('text', '[L]This is a\n multiline text[/L]');
+      expect(result).toBe('Esta es un\n texto multilinea');
+    });
+  })
+
   it('applies trimmer before lookup', () => {
     parameters.customTrimmers = { text: /\\\I\[\d+\]/g } as CustomTextTrimmers;
     const result = handler.getCustom('text', 'key');
