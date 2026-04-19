@@ -23,7 +23,16 @@
  * @text Image Folders
  * @type string[]
  * @desc The list of folders inside 'img/' to scan for images.
+ * @parent allSourceFolders
  * @default ["system", "pictures", "titles1", "titles2"]
+ *
+ * @param allSourceFolders
+ * @text Scan All Image Folders
+ * @type boolean
+ * @on Yes
+ * @off No
+ * @desc If enabled, scans every folder inside 'img/' and ignores Image Folders.
+ * @default false
  *
  * @param generationMode
  * @text File Generation Mode

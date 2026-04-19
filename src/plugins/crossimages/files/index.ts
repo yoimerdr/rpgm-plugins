@@ -26,19 +26,30 @@ export function generateImagesSourceFolder() {
  * @returns {KeyableObject} A mapping of image filenames to their source paths.
  */
 export function loadImagesSource(manager: FileManager) {
-  const result: KeyableObject = {};
+  const result: KeyableObject = {},
+    files = parameters.allSourceFolders
+      ? list("img", manager)
+      : (() => {
+        const result: string[] = [];
 
-  each(parameters.sourceFolders, (folder) => {
-    each(list(join("img", folder), manager), (filepath) => {
-      const path = new Filepath(filepath.toLowerCase()),
-        parent = path.parent,
-        parts = parent ? parent.parts : [],
-        sourcePath = new Filepath(filepath),
-        sourcePrefix = sourcePath.prefix,
-        sourceTarget = sourcePath.parent ? sourcePath.parent.join(sourcePrefix).toString() : sourcePrefix;
+        each(parameters.sourceFolders, (folder) => {
+          each(list(join("img", folder), manager), (filepath) => {
+            result.push(filepath);
+          });
+        });
 
-      setobj.apply(indefinite, concat([result] as any, parts, [path.prefix, sourceTarget]));
-    });
+        return result;
+      })();
+
+  each(files, (filepath) => {
+    const path = new Filepath(filepath.toLowerCase()),
+      parent = path.parent,
+      parts = parent ? parent.parts : [],
+      sourcePath = new Filepath(filepath),
+      sourcePrefix = sourcePath.prefix,
+      sourceTarget = sourcePath.parent ? sourcePath.parent.join(sourcePrefix).toString() : sourcePrefix;
+
+    setobj.apply(indefinite, concat([result] as any, parts, [path.prefix, sourceTarget]));
   });
 
   return result;
