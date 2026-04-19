@@ -1,5 +1,7 @@
 # CrossImages Plugin (YDP_CrossImages)
 
+> Deprecated: This plugin is now in maintenance mode. For new projects, use `CrossAssets`.
+
 The specific problem this plugin solves is the inconsistency in file system case-sensitivity between Windows (development environment) and mobile platforms like Android/iOS or Linux (deployment environments).
 
 On Windows, `Image.png` and `image.png` are treated as the same file. On Android/iOS, they are different. If you reference `image.png` in your code but the file is named `Image.png`, your game will crash on mobile devices.
