@@ -7,11 +7,18 @@
     "build:core": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/core.config.mjs --configPlugin typescript --bundleConfigAsCjs",
     "watch:core": "npm run build:core -- -w",
     "build:ludens": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/ludens.config.mjs --configPlugin typescript --bundleConfigAsCjs",
-    "watch:ludens": "npm run build:ludens -- -w"
+    "watch:ludens": "npm run build:ludens -- -w",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:core": "vitest run --project core",
+    "test:core:cov": "vitest run --project core --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.4",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.3",
-    "ts-node": "^10.9.2"
+    "vitest": "^4.1.4"
   }
 }

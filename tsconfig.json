@@ -6,7 +6,7 @@
       "dom"
     ],
     "moduleResolution": "node10",
-//    "module": "preserve",
+    //    "module": "preserve",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -23,12 +23,16 @@
       ],
       "@ludens-plugin/*": [
         "./src/plugins/ludens/*"
+      ],
+      "@tests/*": [
+        "./tests/*"
       ]
     }
   },
   "include": [
     "src",
-    "lib"
+    "lib",
+    "tests"
   ],
   "exclude": [
     "node_modules"
