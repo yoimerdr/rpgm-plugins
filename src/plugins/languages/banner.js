@@ -1,5 +1,5 @@
 ///=============================================================================
-/// YDP_Languages | 1.1.0 | <%= moment().format('MMMM Do YYYY') %>
+/// YDP_Languages | 1.1.1 | <%= moment().format('MMMM Do YYYY') %>
 ///=============================================================================
 /*~struct~LanguageOption:
 * @param code
@@ -140,7 +140,7 @@
  * @type struct<CustomTextTrimmers>
  * @desc Regex patterns to remove matching substrings from texts (like \I[1]) before looking for translations.
  * @parent enableCustom
- * @default {"option":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\\\d+\\])+"}
+ * @default {"option":"^(\\\\[A-Za-z]+\\[\\d+\\])+","status":"^(\\\\[A-Za-z]+\\[\\d+\\])+","text":"^(\\\\[A-Za-z]+\\[\\d+\\])+"}
  *
  * @param customFallbacks
  * @text Enable Custom Fallback

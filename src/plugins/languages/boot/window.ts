@@ -4,13 +4,22 @@ import {handler} from "@languages-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
 import {parameters} from "@languages-plugin/parameters";
 
+
+function applyFirstParameterToCustomText<T extends (...args: any) => any, P extends Parameters<T>>(...parameters: P): P;
+function applyFirstParameterToCustomText() {
+  const args = arguments;
+  args[0] = handler.getCustom("text", args[0]);
+  return args;
+}
+
+
 /**
  * Applies custom text translation support to window rendering.
  * Extends Window_Base.drawText and Window_Base.drawTextEx to automatically
  * translate custom text strings when they are displayed.
  */
 export function applyWindow() {
-  if(!parameters.enableCustom)
+  if (!parameters.enableCustom)
     return;
 
   // text options
@@ -18,19 +27,11 @@ export function applyWindow() {
     getPrototype(Window_Base),
     {
       drawTextEx: {
-        modifyParameters() {
-          const args = arguments as unknown as SafeParameters<Window_Base["drawTextEx"]>;
-          args[0] = handler.getCustom("text", args[0]);
-          return args;
-        }
+        modifyParameters: applyFirstParameterToCustomText
       },
       drawText: {
-        modifyParameters() {
-          const args = arguments as unknown as SafeParameters<Window_Base["drawText"]>;
-          args[0] = handler.getCustom("text", args[0]);
-          return args;
-        }
-      }
+        modifyParameters: applyFirstParameterToCustomText
+      },
     }
   );
 }

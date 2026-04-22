@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-04-22
+
+### Fixed
+- Fixed wrapping-tag parsing so multiline content is matched consistently.
+- Fixed wrapping-tag cleanup for default-language text and added support for nested wrapping tags.
+
+### Changed
+- Refactored custom-text application flow to simplify internal reduction logic.
+
 ## [1.1.0] - 2026-04-16
 
 ### Added

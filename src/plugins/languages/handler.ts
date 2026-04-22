@@ -289,13 +289,15 @@ export function getCustomText($this: PluginHandler, key: string, query: string):
 function processTags($this: PluginHandler, key: string, text: string): string {
   if (!isString(text)) return text;
 
+  let processed = false;
+
   // --- Escape tags: \x1b<KEY>[ID] ---
   if (parameters.enableEscapeTag) {
     const ek = parameters.escapeTagKey;
-    // After RPG Maker's convertEscapeCharacters the backslash becomes \x1b
     const escapeRe = new RegExp('\\x1b' + ek + '\\[([^\\]]+)\\]', 'gi');
     text = text.replace(escapeRe, function (_match: string, id: string) {
       const resolved = getCustomText($this, key, id);
+      processed = true;
       return (resolved && resolved !== id) ? resolved : id;
     });
   }
@@ -306,19 +308,24 @@ function processTags($this: PluginHandler, key: string, text: string): string {
     let wrapRe: RegExp;
     switch (parameters.wrappingTagFormat) {
       case "square":
-        wrapRe = new RegExp('\\[' + wk + '\\](.*?)\\[\\/' + wk + '\\]', 'gi');
+        wrapRe = new RegExp('\\[' + wk + '\\]([\\s\\S]*?)\\[\\/' + wk + '\\]', 'gi');
         break;
       case "angle":
-        wrapRe = new RegExp('<' + wk + '>(.*?)<\\/' + wk + '>', 'gi');
+        wrapRe = new RegExp('<' + wk + '>([\\s\\S]*?)<\\/' + wk + '>', 'gi');
         break;
       default: // curly
-        wrapRe = new RegExp('\\{' + wk + '\\}(.*?)\\{\\/' + wk + '\\}', 'gi');
+        wrapRe = new RegExp('\\{' + wk + '\\}([\\s\\S]*?)\\{\\/' + wk + '\\}', 'gi');
         break;
     }
     text = text.replace(wrapRe, function (_match: string, source: string) {
       const resolved = getCustomText($this, key, source);
+      processed = true;
       return (resolved && resolved !== source) ? resolved : source;
     });
+  }
+
+  if (processed) {
+    return processTags($this, key, text);
   }
 
   return text;
@@ -374,8 +381,14 @@ const indexKey = uid("i"),
       update(this);
     },
     getCustom(key, name): string {
-      if (!parameters.enableCustom || this.language.equals(DefaultLanguage))
+      if (!parameters.enableCustom)
         return name;
+      if (this.language.equals(DefaultLanguage)) {
+        if (parameters.enableWrappingTag) {
+          return processTags(this, key, name);
+        }
+        return name;
+      }
 
       if(!isString(name)) {
         console.warn("[Languages Plugin] Custom text query must be a string. Received: ", name);
