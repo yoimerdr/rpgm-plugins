@@ -6,6 +6,7 @@ import {isFunction} from "@jstls/core/objects/types";
 import {doc} from "@jstls/components/shared/constants";
 import {apply} from "@jstls/core/functions/apply";
 import {get2, set2} from "@jstls/core/objects/handlers/getset";
+import {SafeParameters} from "@jstls/types/core";
 
 /**
  * Applies boot modifications to RPG Maker's core systems for Ludens compatibility.
@@ -15,7 +16,9 @@ import {get2, set2} from "@jstls/core/objects/handlers/getset";
  * - Encodes image filenames in non-NWjs environments.
  */
 export function applyBoot() {
-  const fontLoadingFunctionKey = "_setupCssFontLoading";
+  const fontLoadingFunctionKey = "_setupCssFontLoading",
+    isMV = Utils.RPGMAKER_NAME == "MV";
+
   if (Graphics && isFunction(get2(Graphics, fontLoadingFunctionKey))) {
     method(
       Graphics as KeyableObject,
@@ -47,7 +50,8 @@ export function applyBoot() {
             "LudensLoader",
             JSON.stringify({
               isEnabled: true,
-              isLoading: false
+              isLoading: false,
+              canToggleDrawEngine: isMV // Only MV supports toggling the draw engine, for MZ is required WebGL.
             })
           );
         }
@@ -56,14 +60,21 @@ export function applyBoot() {
   )
 
   method(
-    ImageManager,
-    "loadBitmap",
+    Bitmap,
+    "load",
     {
-      modifyParameters(folder, filename, hue, smooth) {
-        if (!Utils.isNwjs()) {
-          filename = encodeURIComponent(filename);
+      modifyParameters() {
+        const args = arguments;
+
+        if (!Utils.isNwjs() && args[0] && isMV) {
+          // This may not be entirely accurate, but it seems that, before calling `Bitmap.load`,
+          // the path is decoded in MV, whereas in MZ it is not.
+          // So we encode it here to be sure it works like URL for both engines.
+          args[0] = encodeURIComponent(args[0])
+            .replace(/%2F/g, "/");
         }
-        return [folder, filename, hue, smooth] as any;
+
+        return args as unknown as SafeParameters<((typeof Bitmap)["load"])>;
       }
     }
   );
