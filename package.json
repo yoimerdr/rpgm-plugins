@@ -16,6 +16,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:core": "vitest run --project core",
+    "test:ludens": "vitest run --project ludens",
+    "test:ludens:cov": "vitest run --project ludens --coverage",
     "test:core:cov": "vitest run --project core --coverage",
     "test:languages": "vitest run --project languages",
     "test:languages:cov": "vitest run --project languages --coverage"

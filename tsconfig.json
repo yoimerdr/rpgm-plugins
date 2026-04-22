@@ -21,11 +21,11 @@
       "@core-plugin/*": [
         "./src/plugins/core/*"
       ],
-      "@tests/*": [
-        "./tests/*"
-      ],
       "@ludens-plugin/*": [
         "./src/plugins/ludens/*"
+      ],
+      "@tests/*": [
+        "./tests/*"
       ],
       "@crossimages-plugin/*": [
         "./src/plugins/crossimages/*"

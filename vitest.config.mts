@@ -2,6 +2,7 @@ import {definePluginTestConfig} from './tests/configuration';
 
 const alias = {
   '@core-plugin': '/src/plugins/core',
+  '@ludens-plugin': '/src/plugins/ludens',
   '@jstls': '/lib/jstls/src',
   "@languages-plugin": '/src/plugins/languages',
   "@tests": '/tests',
@@ -33,6 +34,15 @@ export default definePluginTestConfig({
             './tests/configuration/setup/index.ts',
             './tests/configuration/setup/languages.ts'
           ],
+        }
+      },
+      {
+        // Ludens plugin tests
+        resolve: {alias},
+        test: {
+          name: 'ludens',
+          include: ['tests/unit/ludens/**/*.{test,spec}.ts'],
+          setupFiles: ['./tests/configuration/setup/ludens.ts'],
         }
       },
     ]
