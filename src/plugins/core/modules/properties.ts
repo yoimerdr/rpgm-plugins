@@ -42,6 +42,17 @@ export type PolyfillMode = "auto" | "include" | "exclude";
  * @param mode The polyfill mode (`auto`, `include`, `exclude`).
  * @param name The name of the property to polyfill on the global object.
  * @param polyfill The polyfill implementation.
+ * @example
+ * ```ts
+ * // Automatically add a polyfill if not already present
+ * setWindowPolyfill("auto", "customMethod", function() { return "polyfilled"; });
+ * 
+ * // Force include a polyfill
+ * setWindowPolyfill("include", "customMethod", function() { return "polyfilled"; });
+ * 
+ * // Force exclude a polyfill (will not be applied)
+ * setWindowPolyfill("exclude", "customMethod", function() { return "polyfilled"; });
+ * ```
  */
 export function setWindowPolyfill(mode: PolyfillMode, name: string, polyfill: any) {
   if (mode === "include" || (mode === "auto" && !isDefined(get2(win, name)))) {
@@ -50,7 +61,7 @@ export function setWindowPolyfill(mode: PolyfillMode, name: string, polyfill: an
 }
 
 /**
- * Defines a property on an object.
+ * Defines a property on an object if it doesn't already exist.
  *
  * @param target The object to define the property on.
  * @param key The property key.
@@ -67,6 +78,7 @@ export function define<T, K extends Keys<T> | PropertyKey = PropertyKey>(target:
  *
  * @param target The object to define properties on.
  * @param descriptors A map of property keys to descriptors.
+ * @see {@link define}
  */
 export const defines = bind(multiple, indefinite, define) as {
   <T>(target: T, descriptors: DefinePropertyDescriptors<T>): void;

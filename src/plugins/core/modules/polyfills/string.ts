@@ -17,6 +17,14 @@ export interface StringPolyfill {
   repeat(count: number): string;
 }
 
+/**
+ * Applies polyfills for instance methods of the `String` object.
+ *
+ * This function ensures that modern String methods like `startsWith`, `endsWith`, and `repeat` are available
+ * across different environments by defining them on the String prototype if they are missing.
+ * It should be called during plugin initialization to guarantee consistent behavior
+ * regardless of the target environment's JavaScript support.
+ */
 export function applyStringPolyfills() {
   defines(
     prototype(String),

@@ -26,6 +26,8 @@ export interface CoreMappers {
 
 /**
  * The core mappers module instance.
+ *
+ * Provides access to all core mapping and transformation utilities.
  */
 export const mappers: CoreMappers = {
   set,

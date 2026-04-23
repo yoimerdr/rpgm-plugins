@@ -21,6 +21,8 @@ export interface CoreIterables {
 
 /**
  * The core iterables module instance.
+ *
+ * Provides access to all core iterable utilities.
  */
 export const iterables: CoreIterables = {
   each: each,

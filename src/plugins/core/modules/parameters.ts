@@ -5,8 +5,16 @@ export type BooleanParameter = "true" | "false" | "null" | "undefined";
 /**
  * Converts a string parameter to a boolean.
  *
- * @param value The string value ("true", "false", etc.).
+ * @param value The string value to convert ("true", "false", etc.).
  * @returns `true` if the value is "true", `false` otherwise.
+ * @example
+ * ```ts
+ * boolParameter("true"); // returns true
+ * boolParameter("false"); // returns false
+ * boolParameter("null"); // returns false
+ * boolParameter("undefined"); // returns false
+ * boolParameter("yes"); // returns false
+ * ```
  */
 export function boolParameter(value: BooleanParameter | string) {
   return string(value) === "true";
@@ -24,6 +32,8 @@ export interface CoreParameters {
 
 /**
  * The core parameters module instance.
+ *
+ * Provides access to all core parameter utilities.
  */
 export const parameters: CoreParameters = {
   bool: boolParameter

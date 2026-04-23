@@ -6,25 +6,23 @@ import {listFiles} from "./base";
  * The core files module.
  *
  * Provides utilities for managing and listing files within the plugin environment.
+ * This module aggregates file-related functionalities, including generic file listing
+ * and specialized handling for images and audio files.
  */
 export interface CoreFiles {
-  /**
-   * Lists files in the given folder.
-   *
-   * Scans the specified directory for files.
-   *
-   * @param folder The folder to list the files from.
-   * @param options The configuration options for listing files.
-   * @param fs The file manager to use. If not provided, the default file manager is used.
-   * @returns An array of absolute file paths to the found files.
-   */
   list: typeof listFiles;
   /**
    * The image handling module.
+   *
+   * Provides utilities for working with image files, such as listing images
+   * and checking supported image extensions.
    */
   images: CoreImages;
   /**
    * The audio handling module.
+   *
+   * Provides utilities for working with audio files, such as listing audios
+   * and checking supported audio extensions.
    */
   audios: CoreAudios;
 }

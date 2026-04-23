@@ -9,6 +9,7 @@ import {getDefined} from "@jstls/core/objects/validators";
 export interface FileListingOptions {
   /**
    * Whether to list files recursively.
+   * @default false
    */
   recursive?: boolean;
 }
@@ -23,6 +24,18 @@ export interface FileListingOptions {
  * @param options The configuration options for listing files.
  * @param fs The file manager to use. If not provided, the default file manager is used.
  * @returns An array of absolute file paths to the found files.
+ * @example
+ * ```ts
+ * // List all files in a directory recursively
+ * const files = listFiles("/path/to/dir", { recursive: true });
+ * 
+ * // List only top-level files
+ * const topLevelFiles = listFiles("/path/to/dir", { recursive: false });
+ * 
+ * // Use a custom file manager
+ * const customFS = getCustomFileManager();
+ * const files = listFiles("/path/to/dir", { recursive: true }, customFS);
+ * ```
  */
 export function listFiles(
   path: string,

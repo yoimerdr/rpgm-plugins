@@ -51,6 +51,8 @@ export interface CoreValidations {
 
 /**
  * The core validations module instance.
+ *
+ * Provides access to all core validation utilities.
  */
 export const validations: CoreValidations = {
   isType: typeIs,

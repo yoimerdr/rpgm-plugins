@@ -16,6 +16,14 @@ export interface ObjectConstructorPolyfill {
   is(value1: any, value2: any): boolean
 }
 
+/**
+ * Applies polyfills for static methods of the `Object` constructor.
+ *
+ * This function ensures that modern Object methods like `assign` and `is` are available
+ * across different environments by defining them on the Object constructor if they are missing.
+ * It should be called during plugin initialization to guarantee consistent behavior
+ * regardless of the target environment's JavaScript support.
+ */
 export function applyObjectPolyfills() {
   defines(
     Object,
