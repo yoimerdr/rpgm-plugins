@@ -9,7 +9,7 @@ import {mappers} from '@core-plugin/modules/mappers';
 import {env} from '@core-plugin/modules/env';
 import {images} from '@core-plugin/modules/images';
 import {functions} from '@core-plugin/modules/functions';
-import {YDPCore} from "@core-plugin/index";
+import {files, YDPCore} from "@core-plugin/index";
 import {vi} from "vitest";
 import {applyPolyfills} from "@core-plugin/modules/polyfills";
 
@@ -33,6 +33,7 @@ export function setupYdpCore() {
     mappers,
     env,
     images,
+    files,
     functions,
     PluginName: 'YDP_Core',
   };
