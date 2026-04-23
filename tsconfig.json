@@ -23,7 +23,10 @@
       ],
       "@tests/*": [
         "./tests/*"
-      ]
+      ],
+      "@crossassets-plugin/*": [
+        "./src/plugins/crossassets/*"
+      ],
     }
   },
   "include": [
