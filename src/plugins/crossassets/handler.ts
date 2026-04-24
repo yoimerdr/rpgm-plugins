@@ -1,16 +1,14 @@
 import {uid, writeable} from "@crossassets-plugin/shortcuts/properties";
-import {concat, get, get2, set, set2, string} from "@crossassets-plugin/shortcuts/mappers";
+import {get, get2, set, string} from "@crossassets-plugin/shortcuts/mappers";
 import {fetchJson} from "@crossassets-plugin/shortcuts/requests";
 import {Filepath, join} from "@crossassets-plugin/shortcuts/env/path";
 import {parameters} from "@crossassets-plugin/parameters";
 import {KeyableObject} from "@jstls/types/core/objects";
-import {keach} from "@crossassets-plugin/shortcuts/iterables";
-import {isObject, isString} from "@crossassets-plugin/shortcuts/validations";
-import {isArray} from "@jstls/core/shortcuts/array";
-import {indefinite} from "@jstls/core/utils/types";
+import {each} from "@crossassets-plugin/shortcuts/iterables";
+import {isString} from "@crossassets-plugin/shortcuts/validations";
 import {Maybe} from "@jstls/types/core";
-import {hasOwn} from "@jstls/core/polyfills/objects/es2022";
 import {files} from "@crossassets-plugin/shortcuts/files";
+import {create} from "@jstls/core/shortcuts/object";
 
 
 export interface AssetResolution {
@@ -57,64 +55,31 @@ export interface PluginHandler {
 
 
 /**
- * Flattens a nested object into a flat object with concatenated keys.
- * Converts nested objects into path-style keys joined by prefix.
- * @param {KeyableObject} obj - Source object with nested properties.
- * @param {string} prefix - Prefix for resulting keys.
- * @param {KeyableObject} result - Result object with flattened properties.
- * @returns {KeyableObject} The flattened object.
- */
-export function flatobj(obj: KeyableObject, prefix: string, result: KeyableObject) {
-  keach(obj, (value, key) => {
-    const newKey = prefix ? join(prefix, string(key)) : string(key);
-    if (isObject(value) && !isArray(value)) {
-      flatobj(value, newKey, result);
-    } else set2(result, newKey, value);
-  });
-  return result;
-}
-
-/**
- * Resolves tokenized paths in the source object using the $t dictionary.
- * @param {KeyableObject} obj - The object containing tokenized values.
- * @param {KeyableObject} tokens - The dictionary of tokens.
- */
-function resolveTokens(obj: KeyableObject, tokens: KeyableObject) {
-  keach(obj, (value: string | KeyableObject, key) => {
-    if (key === "$t") return;
-
-    if (isObject(value) && !isArray(value)) {
-      resolveTokens(value as KeyableObject, tokens);
-    } else if (isString(value)) {
-      const separatorIndex = value.indexOf(":");
-      if (separatorIndex !== -1) {
-        const tokenId = value.substring(0, separatorIndex);
-        if (hasOwn(tokens, tokenId)) {
-          const prefix = value.substring(separatorIndex + 1);
-          set2(obj, key, join(tokens[tokenId], prefix));
-        }
-      }
-    }
-  });
-}
-
-/**
  * Updates the internal storage of asset sources.
- * Flattens the source object if load mode is set to "flatten",
- * or leaves it unmodified if in "raw" mode.
- * @param {KeyableObject} source - Object with asset sources loaded from JSON.
- * @returns {void}
+ *
+ * @param source - Object with asset sources loaded from JSON.
  */
 export function update(source: KeyableObject) {
-  if (source.$t && isObject(source.$t)) {
-    resolveTokens(source, source.$t);
-    delete source.$t;
-  }
+  const dirs = source.$d || [],
+    filesGroups = source.$f || [];
 
-  const result = parameters.loadMode == "raw" ?
-    source : flatobj(
-      source, "", {}
-    );
+  const result = create(null);
+  each(filesGroups, (group: Array<any>) => {
+    const index = group[0],
+      names = group[1],
+      folder = dirs[index] || "",
+      lowerFolder = folder.toLowerCase(),
+      files = create(null) as KeyableObject;
+
+    files[":d"] = folder;
+
+    each(names, (name: string) => {
+      files[name.toLowerCase()] = name
+    });
+
+    result[lowerFolder] = files;
+  })
+
 
   set(handler, assetsKey, result);
 }
@@ -134,12 +99,19 @@ export function loadAssetsSources() {
 
 
 function resolveSource($this: PluginHandler, source: string): Maybe<AssetResolution> {
-  source = source.toLowerCase();
-  if (parameters.loadMode === "raw") {
-    const path = new Filepath(source);
-    source = get.apply(indefinite, concat([get2($this, assetsKey)], path.parts) as any);
-  }
-  source = get($this, assetsKey, source);
+  const filepath = new Filepath(source),
+    parent = filepath.parent,
+    folder = parent ? string(parent).toLowerCase() : "",
+    filename = filepath.prefix.toLowerCase(),
+    files = get($this, assetsKey, folder);
+
+  if (files) {
+    source = files[filename];
+    if (source) {
+      source = files[":d"] ? files[":d"] + "/" + source : source;
+    } else source = null!;
+  } else source = null!;
+
 
   if (isString(source)) {
     return {path: source, resolved: true};

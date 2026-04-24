@@ -4,11 +4,16 @@ import {vi} from 'vitest';
 
 const CrossAssetsData = {
   assets: {
-    img: {
-      animations: { absorb: "img/animations/Absorb" },
-      pictures: { hero: "img/pictures/Hero" }
-    },
-    audio: { bgm: { town: "audio/bgm/Town" } }
+    "$d": [
+      "img/animations",
+      "img/pictures",
+      "audio/bgm"
+    ],
+    "$f": [
+      [0, ["Absorb"]],
+      [1, ["Hero"]],
+      [2, ["Town"]]
+    ],
   }
 };
 
