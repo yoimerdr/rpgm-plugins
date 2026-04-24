@@ -7,6 +7,7 @@ import {concat, setobj} from "@crossassets-plugin/shortcuts/mappers";
 import {indefinite} from "@jstls/core/utils/types";
 import {KeyableObject} from "@jstls/types/core/objects";
 import {files} from "@crossassets-plugin/shortcuts/files";
+import {hasOwn} from "@jstls/core/polyfills/objects/es2022";
 
 /**
  * Creates the directory for storing assets source JSON files.
@@ -40,12 +41,17 @@ function loadAssets(
 /**
  * Loads assets sources from the configured source folders.
  * Scans each folder defined in parameters and builds a mapping
- * of asset filenames to their source paths.
+ * of asset filenames to their source paths, utilizing a tokenized path dictionary.
  * @param {FileManager} manager - The file manager instance for reading directories.
  * @returns {KeyableObject} A mapping of asset filenames to their source paths.
  */
 export function loadAssetsSource(manager: FileManager) {
-  const result: KeyableObject = {};
+  const result: KeyableObject = {
+    $t: {}
+  };
+
+  const tokenMap: { [key: string]: string } = {};
+  let tokenIdCounter = 0;
 
   const images = loadAssets(
       manager,
@@ -67,8 +73,24 @@ export function loadAssetsSource(manager: FileManager) {
       parent = path.parent,
       parts = parent ? parent.parts : [],
       sourcePath = new Filepath(filepath),
-      sourcePrefix = sourcePath.prefix,
-      sourceTarget = sourcePath.parent ? sourcePath.parent.join(sourcePrefix).toString() : sourcePrefix;
+      sourcePrefix = sourcePath.prefix;
+
+    let sourceTarget: string;
+
+    if (sourcePath.parent) {
+      const folder = sourcePath.parent.toString();
+
+      if (!hasOwn(tokenMap, folder)) {
+        const tokenId = tokenIdCounter.toString(36);
+        tokenMap[folder] = tokenId;
+        result.$t[tokenId] = folder;
+        tokenIdCounter++;
+      }
+
+      sourceTarget = tokenMap[folder] + ":" + sourcePrefix;
+    } else {
+      sourceTarget = sourcePrefix;
+    }
 
     setobj.apply(indefinite, concat([result] as any, parts, [path.prefix, sourceTarget]));
   });
@@ -97,5 +119,4 @@ export function generateAssetsSource() {
   const source = loadAssetsSource(manager);
 
   manager.writeFileSync(filename, JSON.stringify(source));
-
 }
