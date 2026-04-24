@@ -9,6 +9,9 @@ import {isObject, isString} from "@crossassets-plugin/shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 import {indefinite} from "@jstls/core/utils/types";
 import {Maybe} from "@jstls/types/core";
+import {hasOwn} from "@jstls/core/polyfills/objects/es2022";
+import {files} from "@crossassets-plugin/shortcuts/files";
+
 
 export interface AssetResolution {
   path: string;
@@ -72,6 +75,30 @@ export function flatobj(obj: KeyableObject, prefix: string, result: KeyableObjec
 }
 
 /**
+ * Resolves tokenized paths in the source object using the $t dictionary.
+ * @param {KeyableObject} obj - The object containing tokenized values.
+ * @param {KeyableObject} tokens - The dictionary of tokens.
+ */
+function resolveTokens(obj: KeyableObject, tokens: KeyableObject) {
+  keach(obj, (value: string | KeyableObject, key) => {
+    if (key === "$t") return;
+
+    if (isObject(value) && !isArray(value)) {
+      resolveTokens(value as KeyableObject, tokens);
+    } else if (isString(value)) {
+      const separatorIndex = value.indexOf(":");
+      if (separatorIndex !== -1) {
+        const tokenId = value.substring(0, separatorIndex);
+        if (hasOwn(tokens, tokenId)) {
+          const prefix = value.substring(separatorIndex + 1);
+          set2(obj, key, join(tokens[tokenId], prefix));
+        }
+      }
+    }
+  });
+}
+
+/**
  * Updates the internal storage of asset sources.
  * Flattens the source object if load mode is set to "flatten",
  * or leaves it unmodified if in "raw" mode.
@@ -79,6 +106,11 @@ export function flatobj(obj: KeyableObject, prefix: string, result: KeyableObjec
  * @returns {void}
  */
 export function update(source: KeyableObject) {
+  if (source.$t && isObject(source.$t)) {
+    resolveTokens(source, source.$t);
+    delete source.$t;
+  }
+
   const result = parameters.loadMode == "raw" ?
     source : flatobj(
       source, "", {}
@@ -117,6 +149,8 @@ function resolveSource($this: PluginHandler, source: string): Maybe<AssetResolut
 
 
 const assetsKey = uid("m"),
+  allExtensions = files.images.extensions
+    .concat(files.audios.extensions),
   setupKey = uid("m"),
   handler = <PluginHandler>{
     setup() {
@@ -137,21 +171,27 @@ const assetsKey = uid("m"),
       if (!get2($this, setupKey))
         return {path: inputPath, resolved: false};
 
-      let resolved = resolveSource($this, inputPath);
+      const extMatch = allExtensions.find(ext => inputPath.toLowerCase().endsWith(ext)),
+        cleanPath = extMatch ? inputPath.slice(0, -extMatch.length) : inputPath;
 
-      if (resolved) return resolved;
+      let resolved = resolveSource($this, cleanPath);
 
-      let decodedPath = inputPath;
+      if (resolved) {
+        resolved.path += extMatch || "";
+        return resolved;
+      }
+
+      let decodedPath = cleanPath;
       try {
-        decodedPath = decodeURIComponent(inputPath);
+        decodedPath = decodeURIComponent(cleanPath);
       } catch (e) {
       }
 
-      if (decodedPath !== inputPath) {
+      if (decodedPath !== cleanPath) {
         resolved = resolveSource($this, decodedPath);
         if (resolved) {
-          resolved.path = encodeURIComponent(resolved.path)
-            .replace(/%2F/g, "/");
+          resolved.path = (encodeURIComponent(resolved.path)
+            .replace(/%2F/g, "/")) + (extMatch || "");
 
           return resolved;
         }
