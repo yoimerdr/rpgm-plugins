@@ -4,6 +4,9 @@ import {setpath} from "@crossassets-plugin/shortcuts/env/logger";
 import {join} from "@crossassets-plugin/shortcuts/env/path";
 import {applyFullBoot, applyLiteBoot} from "@crossassets-plugin/boot/scene";
 import {applyAssets} from "@crossassets-plugin/boot/assets";
+import {isObject} from "@crossassets-plugin/shortcuts/validations";
+import YDP_Core from "@core-plugin/types";
+import {IllegalAccessError} from "@jstls/core/exceptions";
 
 /**
  * Applies the base plugin configuration.
@@ -13,6 +16,8 @@ import {applyAssets} from "@crossassets-plugin/boot/assets";
  */
 export function applyBasePlugin() {
   setpath(join("log", PluginName, "crossassets.log"));
+  if (!isObject(YDP_Core.files))
+    throw new IllegalAccessError("YDP_Core.files is not accessible. Ensure the version of YDP_Core is the lastest.");
 
   setupParameters();
 
