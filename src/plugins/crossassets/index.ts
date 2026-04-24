@@ -1,5 +1,6 @@
 import {KeyableObject} from "@jstls/types/core/objects";
 import {applyFullPlugin} from "@crossassets-plugin/boot";
+import {handler, PluginHandler} from "./handler";
 
 declare const exports: KeyableObject;
 
@@ -15,7 +16,12 @@ applyFullPlugin();
  * Provides access to plugin functionality and configuration.
  */
 export interface YDPCrossAssets {
+  /**
+   * The plugin handler instance that provides methods to configure and retrieve asset sources.
+   * */
+  handler: PluginHandler;
 }
 
 export {
+  handler
 }
