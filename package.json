@@ -12,7 +12,9 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:core": "vitest run --project core",
-    "test:core:cov": "vitest run --project core --coverage"
+    "test:core:cov": "vitest run --project core --coverage",
+    "test:crossassets": "vitest run --project crossassets",
+    "test:crossassets:cov": "vitest run --project crossassets --coverage"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",
