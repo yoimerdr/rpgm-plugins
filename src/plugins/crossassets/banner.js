@@ -59,14 +59,6 @@
  * @desc always: Generate on every run. auto: Generate if missing. none: The file is not generated.
  * @default auto
  *
- * @param loadMode
- * @text Loading Strategy
- * @desc How asset paths are loaded into memory.
- * @type combo
- * @option flatten
- * @option raw
- * @desc flatten: Flattens the object structure. raw: Keeps the nested structure.
- * @default flatten
  *
  * @help
  * =============================================================================

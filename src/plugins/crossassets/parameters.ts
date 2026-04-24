@@ -35,8 +35,6 @@ export interface Parameters {
   audioFolders: string[];
   /** Mode for generating the source file. */
   generationMode: GenerateSourceMode;
-  /** Mode for loading asset sources. */
-  loadMode: "flatten" | "raw";
 }
 
 /**
@@ -64,8 +62,6 @@ export const PluginName = "YDP_CrossAssets",
     filename: "assets",
     /** Default folder path for the JSON file. */
     folder: join("data", "crossassets",),
-    /** Default load mode for asset sources. */
-    loadMode: "flatten",
   } as Parameters;
 
 /*
