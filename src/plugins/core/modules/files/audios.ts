@@ -75,20 +75,20 @@ export const audios = <CoreAudios>{
     raw: [".ogg", ".m4a"]
   },
   isSupported(filename) {
-    return this.extensions.some(ext => filename.endsWith(ext))
+    return audios.extensions.some(ext => filename.endsWith(ext))
   },
   list(folder, fs) {
     const files = listFiles(folder, {
         recursive: true
       }, fs),
-      $this = this;
+      $this = audios;
 
     return files.filter($this.isSupported, $this);
   }
 }
 
 getter(audios, "extensions", function () {
-  const ext = this.ext;
+  const ext = audios.ext;
 
   return ext.raw
     .concat(ext.encoded)

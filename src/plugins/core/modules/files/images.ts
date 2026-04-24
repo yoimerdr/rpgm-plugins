@@ -75,20 +75,20 @@ export const images = <CoreImages>{
     raw: [".png"]
   },
   isSupported(filename) {
-    return this.extensions.some(ext => filename.endsWith(ext))
+    return images.extensions.some(ext => filename.endsWith(ext))
   },
   list(folder, fs) {
     const files = listFiles(folder, {
         recursive: true
       }, fs),
-      $this = this;
+      $this = images;
 
     return files.filter($this.isSupported, $this);
   }
 }
 
 getter(images, "extensions", function () {
-  const ext = this.ext;
+  const ext = images.ext;
 
   return ext.raw
     .concat(ext.encoded)
