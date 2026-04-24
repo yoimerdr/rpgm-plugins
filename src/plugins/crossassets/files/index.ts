@@ -6,8 +6,9 @@ import {each} from "@crossassets-plugin/shortcuts/iterables";
 import {concat} from "@crossassets-plugin/shortcuts/mappers";
 import {KeyableObject} from "@jstls/types/core/objects";
 import {files} from "@crossassets-plugin/shortcuts/files";
-import {hasOwn} from "@jstls/core/polyfills/objects/es2022";
 import {keys} from "@jstls/core/objects/handlers/properties";
+import {hasOwn} from "@jstls/core/polyfills/objects/es2022";
+import {isDefined} from "@crossassets-plugin/shortcuts/validations";
 
 /**
  * Creates the directory for storing assets source JSON files.
@@ -71,7 +72,7 @@ export function loadAssetsSource(manager: FileManager): KeyableObject {
       sourcePrefix = sourcePath.prefix,
       parentStr = sourcePath.parent ? sourcePath.parent.toString() : "";
 
-    if (!hasOwn(dirMap, parentStr)) {
+    if (isDefined(dirMap[parentStr])) {
       const newId = dirs.length;
       dirs.push(parentStr);
       dirMap[parentStr] = newId;
