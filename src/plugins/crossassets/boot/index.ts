@@ -6,7 +6,7 @@ import {applyFullBoot, applyLiteBoot} from "@crossassets-plugin/boot/scene";
 import {applyAssets} from "@crossassets-plugin/boot/assets";
 import {isObject} from "@crossassets-plugin/shortcuts/validations";
 import YDP_Core from "@core-plugin/types";
-import {IllegalAccessError} from "@jstls/core/exceptions";
+import {IllegalAccessError} from "@crossassets-plugin/shortcuts/exceptions";
 
 /**
  * Applies the base plugin configuration.

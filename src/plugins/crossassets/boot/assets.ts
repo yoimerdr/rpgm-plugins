@@ -1,7 +1,7 @@
 import {extendMethod} from "@crossassets-plugin/shortcuts/cls";
 import {handler} from "@crossassets-plugin/handler";
 import {SafeParameters} from "@jstls/types/core";
-import {string} from "@jstls/core/objects/handlers";
+import {string} from "@crossassets-plugin/shortcuts/mappers";
 
 /**
  * Applies asset path resolution to RPG Maker's image and audio loading systems.
