@@ -57,6 +57,8 @@ Bridge plugin between games and the Ludens mobile client. Required for certain f
 
 Standardizes image paths to ensure cross-platform compatibility, fixing issues with case-sensitivity on mobile platforms.
 
+Deprecated: this plugin is now in maintenance mode. For new projects, use `CrossAssets`.
+
 - [Documentation](/src/plugins/crossimages/README.md)
 - [Changelog](/src/plugins/crossimages/CHANGELOG.md)
 - [Download](https://github.com/yoimerdr/rpgm-plugins/releases/tag/crossimages-latest)
