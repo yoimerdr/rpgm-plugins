@@ -19,6 +19,8 @@ export interface CoreClasses {
 
 /**
  * The core classes module instance.
+ *
+ * Provides access to all core class utilities.
  */
 export const cls: CoreClasses = {
   funclass: funclass2,

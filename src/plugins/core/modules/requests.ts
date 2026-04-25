@@ -20,7 +20,8 @@ export type RequestOptions = RequestInit & { responseType?: XMLHttpRequestRespon
  *
  * @param url The URL to fetch.
  * @param init The fetch options.
- * @returns A RequestJsonHandler for managing callbacks.
+ * @returns A Promise that resolves with the parsed JSON response.
+ * @throws {IllegalArgumentError} If the response status is 400 or higher.
  */
 export function fetchJson<T = any>(url: string, init?: RequestOptions): Promise<T> {
   const options: RequestOptions = assign2({} as RequestOptions, init!),
@@ -47,6 +48,15 @@ export function fetchJson<T = any>(url: string, init?: RequestOptions): Promise<
     )
 }
 
+/**
+ * Creates and sends an XMLHttpRequest with the provided options.
+ *
+ * @param input The URL to fetch, either as a string or URL object.
+ * @param init Optional request options (method, headers, etc.).
+ * @returns A Promise that resolves with the XMLHttpRequest object.
+ * @throws {ReferenceError} If XMLHttpRequest is not available (non-browser environment).
+ * @throws {IllegalArgumentError} If the response status is 400 or higher (in fetchJson).
+ */
 export function fetchRequest(input: string | URL, init?: RequestOptions): Promise<XMLHttpRequest> {
   if (typeof XMLHttpRequest === "undefined")
     throw new ReferenceError('This fetch polyfills requires XMLHttpRequest. You must call this on the browser.');
@@ -105,6 +115,8 @@ export interface CoreRequests {
 
 /**
  * The core requests module instance.
+ *
+ * Provides access to all core request utilities.
  */
 export const requests: CoreRequests = {
   fetch: fetchRequest,

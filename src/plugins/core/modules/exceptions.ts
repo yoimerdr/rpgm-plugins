@@ -14,6 +14,8 @@ export interface CoreExceptions {
 }
 /**
  * The core exceptions module instance.
+ *
+ * Provides access to all core exception classes.
  */
 export const exceptions: CoreExceptions = {
   IllegalAccessError,

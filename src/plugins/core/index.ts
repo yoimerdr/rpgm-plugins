@@ -11,7 +11,8 @@ import {CoreProperties, properties} from "./modules/properties";
 import {CoreIterables, iterables} from "./modules/iterables";
 import {CoreMappers, mappers} from "./modules/mappers";
 import {CoreEnvironment, env} from "./modules/env/index";
-import {CoreImages, images} from "@core-plugin/modules/images";
+import {CoreFiles, files} from "@core-plugin/modules/files";
+import {CoreImages, images} from "@core-plugin/modules/files/images";
 import {readonly2} from "@jstls/core/definer";
 import {PluginName, setupParameters} from "@core-plugin/parameters";
 import {CoreFunctions, functions} from "@core-plugin/modules/functions";
@@ -93,10 +94,15 @@ export interface YDPCore {
    */
   env: CoreEnvironment,
   /**
+   * The core files module.
+   *
+   * Provides utilities for managing and listing files within the plugin environment.
+   */
+  files: CoreFiles,
+  /**
    * The core images module.
    *
-   * Manages image file operations, including listing images in directories, checking for supported
-   * extensions, and handling different image formats.
+   * @deprecated Use `files.images` instead.
    */
   images: CoreImages,
 
@@ -126,6 +132,7 @@ export {
   iterables,
   mappers,
   env,
+  files,
   images,
   functions
 }

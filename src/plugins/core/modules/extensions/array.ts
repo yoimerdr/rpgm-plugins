@@ -24,6 +24,10 @@ export interface ArrayExtensions<T> extends ArrayCoreExtensions<T> {
   mapIf<R, This = any>(converter: ArrayEach<T, This, R>, condition?: ArrayEach<T, This, boolean>, thisArg?: This): R[];
 }
 
+/**
+ * Applies array extensions to the global Array prototype.
+ * Adds the mapIf method to Array instances.
+ */
 export function applyArrayExtensions() {
   applyCoreExtensions();
 
