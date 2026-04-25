@@ -12,6 +12,8 @@
     "watch:crossimages": "npm run build:crossimages -- -w",
     "build:languages": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/languages.config.mjs --configPlugin typescript --bundleConfigAsCjs",
     "watch:languages": "npm run build:languages -- -w",
+    "build:crossassets": "node ./.build/node_modules/rollup/dist/bin/rollup -c .build/crossassets.config.mjs --configPlugin typescript --bundleConfigAsCjs",
+    "watch:crossassets": "npm run build:crossassets -- -w",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -20,7 +22,9 @@
     "test:ludens:cov": "vitest run --project ludens --coverage",
     "test:core:cov": "vitest run --project core --coverage",
     "test:languages": "vitest run --project languages",
-    "test:languages:cov": "vitest run --project languages --coverage"
+    "test:languages:cov": "vitest run --project languages --coverage",
+    "test:crossassets": "vitest run --project crossassets",
+    "test:crossassets:cov": "vitest run --project crossassets --coverage"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",

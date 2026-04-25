@@ -33,6 +33,9 @@
       "@languages-plugin/*": [
         "./src/plugins/languages/*"
       ],
+      "@crossassets-plugin/*": [
+        "./src/plugins/crossassets/*"
+      ],
     }
   },
   "include": [

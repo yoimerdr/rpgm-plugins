@@ -5,6 +5,7 @@ const alias = {
   '@ludens-plugin': '/src/plugins/ludens',
   '@jstls': '/lib/jstls/src',
   "@languages-plugin": '/src/plugins/languages',
+  "@crossassets-plugin": '/src/plugins/crossassets',
   "@tests": '/tests',
 };
 
@@ -45,6 +46,18 @@ export default definePluginTestConfig({
           setupFiles: ['./tests/configuration/setup/ludens.ts'],
         }
       },
+      {
+        // CrossAssets plugin tests
+        resolve: {alias},
+        test: {
+          name: 'crossassets',
+          include: ['tests/unit/crossassets/**/*.{test,spec}.ts'],
+          setupFiles: [
+            './tests/configuration/setup/index.ts',
+            "./tests/configuration/setup/crossassets.ts"
+          ],
+        }
+      }
     ]
   },
   resolve: {alias},
