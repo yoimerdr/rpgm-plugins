@@ -72,7 +72,7 @@ export function loadAssetsSource(manager: FileManager): KeyableObject {
       sourcePrefix = sourcePath.prefix,
       parentStr = sourcePath.parent ? sourcePath.parent.toString() : "";
 
-    if (isDefined(dirMap[parentStr])) {
+    if (!isDefined(dirMap[parentStr])) {
       const newId = dirs.length;
       dirs.push(parentStr);
       dirMap[parentStr] = newId;
