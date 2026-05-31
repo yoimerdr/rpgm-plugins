@@ -22,6 +22,9 @@ export function flattenobj(obj: KeyableObject, sep: string): KeyableObject;
 
 export function flattenobj(obj: KeyableObject, sep?: MaybeString): KeyableObject {
   const result = {};
+  if (!isObject(obj))
+    return result;
+
   sep = string(sep);
 
   function flat(current: KeyableObject, prefix: string) {

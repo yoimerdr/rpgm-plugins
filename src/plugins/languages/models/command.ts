@@ -1,7 +1,7 @@
 import {MaybeNumber} from "@jstls/types/core";
 import {WithPrototype} from "@jstls/types/core/objects";
 import {funclass} from "@languages-plugin/shortcuts/cls";
-import {getIf, isDefined, isNumber, returns} from "@languages-plugin/shortcuts/validations";
+import {getIf, isDefined, isNumber, isString, returns} from "@languages-plugin/shortcuts/validations";
 import {isArray} from "@jstls/core/shortcuts/array";
 import {parameters} from "@languages-plugin/parameters";
 import {descriptor2, readonly, readonlys2} from "@languages-plugin/shortcuts/properties";
@@ -105,8 +105,10 @@ export const TextCommand: TextCommandConstructor = funclass({
         {eventId, parameters: params, pageIndex, index, length} = $this;
 
       let source: string[] = params;
-      if (isDefined(length) && length! >= 1)
-        source = params.first().split(parameters.joinSeparator);
+      if (isDefined(length) && length! >= 1 && params && params.length > 0) {
+        const firstParam = params.firstOrNull();
+        source = isString(firstParam) ? firstParam!.split(parameters.joinSeparator) : [];
+      }
 
       return new TextCommand(
         eventId,

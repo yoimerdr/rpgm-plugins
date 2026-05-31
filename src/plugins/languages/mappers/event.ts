@@ -117,7 +117,7 @@ export function eventToCommand(event: MapEvent | DataTroop): LanguageTextCommand
   each(
     event.pages,
     function (page, pageIndex) {
-      if (!isObject(page) || page.list.isEmpty())
+      if (!isObject(page) || !isArray(page.list) || page.list.isEmpty())
         return;
 
       !commands[pageIndex] && set2(commands, pageIndex, {});

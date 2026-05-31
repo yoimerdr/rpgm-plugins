@@ -5,7 +5,7 @@ import {concat, flattenobj, get, get2, set2, string} from "@languages-plugin/sho
 import {each, each2} from "@languages-plugin/shortcuts/iterables";
 import {fetchJson} from "@languages-plugin/shortcuts/requests";
 import {append} from "@languages-plugin/shortcuts/env/logger";
-import {isDefined, isString} from "@languages-plugin/shortcuts/validations";
+import {isDefined, isObject, isString} from "@languages-plugin/shortcuts/validations";
 import {actorFromTransform} from "@languages-plugin/mappers/actor";
 import {itemFromTransform} from "@languages-plugin/mappers/item";
 import {skillFromTransform} from "@languages-plugin/mappers/skill";
@@ -145,12 +145,12 @@ export function loadLanguageFiles() {
 export function update($this: PluginHandler) {
   const language = get2($this, languageKey),
     files = get2($this, filesKey);
-  if (!isDefined(language))
+  if (!isDefined(language) || !isDefined(files))
     return;
 
   const file = get2(files, language.code) as LanguageSource;
 
-  if (!isDefined(files))
+  if (!isDefined(file))
     return;
 
   $dataSystem.gameTitle = file.title;
@@ -160,53 +160,75 @@ export function update($this: PluginHandler) {
   $dataSystem.skillTypes = file.skillTypes;
 
   // assign actors
-  each2(file.actors, function (actor, index) {
-    assign($dataActors[index], actorFromTransform(actor))
-  });
+  if (file.actors) {
+    each2(file.actors, function (actor, index) {
+      assign($dataActors[index], actorFromTransform(actor))
+    });
+  }
   // assign armors
-  each2(file.armors, function (armor, index) {
-    assign($dataArmors[index], itemFromTransform(armor))
-  });
+  if (file.armors) {
+    each2(file.armors, function (armor, index) {
+      assign($dataArmors[index], itemFromTransform(armor))
+    });
+  }
   // assign classes
-  each2(file.classes, function (cls, index) {
-    $dataClasses[index].name = cls;
-  });
+  if (file.classes) {
+    each2(file.classes, function (cls, index) {
+      $dataClasses[index].name = cls;
+    });
+  }
   // assign enemies
-  each2(file.enemies, function (enemy, index) {
-    $dataEnemies[index].battlerName = enemy;
-  });
+  if (file.enemies) {
+    each2(file.enemies, function (enemy, index) {
+      $dataEnemies[index].battlerName = enemy;
+    });
+  }
   // assign items
-  each2(file.items, function (item, index) {
-    assign($dataItems[index], itemFromTransform(item))
-  });
+  if (file.items) {
+    each2(file.items, function (item, index) {
+      assign($dataItems[index], itemFromTransform(item))
+    });
+  }
   // assign skills
-  each2(file.skills, function (skill, index) {
-    assign($dataSkills[index], skillFromTransform(skill))
-  });
+  if (file.skills) {
+    each2(file.skills, function (skill, index) {
+      assign($dataSkills[index], skillFromTransform(skill))
+    });
+  }
   // assign states
-  each2(file.states, function (state, index) {
-    assign($dataStates[index], stateFromTransform(state))
-  });
+  if (file.states) {
+    each2(file.states, function (state, index) {
+      assign($dataStates[index], stateFromTransform(state))
+    });
+  }
   // assign troops
-  each2(file.troops, function (troop, index) {
-    troop = troopFromTransform(troop);
-    const source = $dataTroops[index];
-    source.name = troop.name;
-    assignCommandToEvent(troop.messages, $dataTroops);
-  });
+  if (file.troops) {
+    each2(file.troops, function (troop, index) {
+      troop = troopFromTransform(troop);
+      const source = $dataTroops[index];
+      if (source) {
+        source.name = troop.name;
+        assignCommandToEvent(troop.messages, $dataTroops);
+      }
+    });
+  }
   // assign weapons
-  each2(file.weapons, function (weapon, index) {
-    assign($dataWeapons[index], itemFromTransform(weapon))
-  });
+  if (file.weapons) {
+    each2(file.weapons, function (weapon, index) {
+      assign($dataWeapons[index], itemFromTransform(weapon))
+    });
+  }
 
   // assign language commands
-  assignCommandToEvent(file.commonEvents.messages, [
-    <MapEvent>{
-      id: 0,
-      name: "",
-      pages: $dataCommonEvents as any
-    }
-  ])
+  if (file.commonEvents && file.commonEvents.messages) {
+    assignCommandToEvent(file.commonEvents.messages, [
+      <MapEvent>{
+        id: 0,
+        name: "",
+        pages: $dataCommonEvents as any
+      }
+    ])
+  }
 
   // assign custom values
   set2($this, customsKey, file.custom)
@@ -353,9 +375,16 @@ const indexKey = uid("i"),
     load: function (index) {
       const $this = this,
         {languages} = parameters,
-        total = languages.length,
-        target = changeIndex(total, index),
+        total = languages.length;
+
+      if (total === 0)
+        return false;
+
+      const target = changeIndex(total, index),
         language = languages[target];
+
+      if (!isObject(language))
+        return false;
 
       if (target === $this.index && get2($this, setupKey))
         return false;

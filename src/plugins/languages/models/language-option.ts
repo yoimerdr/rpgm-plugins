@@ -95,7 +95,7 @@ export const LanguageOption: LanguageOptionConstructor = funclass({
     valueOf: getCode,
     toString: getCode,
     equals(other): boolean {
-      return this.code === other.code;
+      return isObject(other) && this.code === (other as LanguageOption).code;
     },
     toJSON() {
       return setTo(this, ["code", "name", "label"], {})
