@@ -7,6 +7,7 @@ import {eventToCommand} from "@languages-plugin/mappers/event";
 import {getKeys} from "@languages-plugin/shortcuts/properties";
 import {append} from "@languages-plugin/shortcuts/env/logger";
 import {EventTextCommand} from "@languages-plugin/models/source";
+import {isArray} from "@jstls/core/shortcuts/array";
 
 /**
  * Loads a map JSON file from the data folder.
@@ -32,6 +33,9 @@ export function loadMapFile(value: string, manager: FileManager) {
  */
 export function loadMapCommands(file: DataMap) {
   const messages: EventTextCommand = {}
+  if (!file || !isArray(file.events))
+    return messages;
+
   each(file.events, function (event) {
     if(!event)
       return;

@@ -43,6 +43,9 @@ export function toJsonTransform<T>(descriptor: SetTransformDescriptor<T>) {
  */
 export function toSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
   return function (source: T) {
+    if (!isObject(source))
+      return source;
+
     source = setTo(source as any, getKeys(descriptor), {}) as T;
     set2(source as JsonSerializable, "toJSON", toJsonTransform(descriptor))
 
@@ -58,6 +61,6 @@ export function toSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
  */
 export function fromSourceTransform<T>(descriptor: SetTransformDescriptor<T>) {
   return function (source: KeyableObject): T {
-    return setTransform(source, descriptor, {}, true) as T;
+    return isObject(source) ? setTransform(source, descriptor, {}, true) as T : source;
   }
 }
