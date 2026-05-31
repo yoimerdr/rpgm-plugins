@@ -4,6 +4,7 @@ import {fps, LudensFps} from "./modules/fps";
 import {events, LudensEmitter} from "@ludens-plugin/modules/events";
 import {set2} from "@jstls/core/objects/handlers/getset";
 import {applyBoot} from "@ludens-plugin/boot";
+import {errors, LudensErrors} from "./modules/errors";
 
 declare const exports: KeyableObject
 
@@ -30,6 +31,11 @@ export interface YDPLudens {
    * Event emitter for handling custom events.
    */
   events: LudensEmitter
+
+  /**
+   * Error manager for reporting errors to the native bridge.
+   */
+  errors: LudensErrors
 }
 
 set2(exports, "events", {
@@ -41,5 +47,6 @@ applyBoot()
 
 export {
   audio,
-  fps
+  fps,
+  errors
 }

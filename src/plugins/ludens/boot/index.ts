@@ -7,6 +7,8 @@ import {doc} from "@jstls/components/shared/constants";
 import {apply} from "@jstls/core/functions/apply";
 import {get2, set2} from "@jstls/core/objects/handlers/getset";
 import {SafeParameters} from "@jstls/types/core";
+import {applyWindow} from "./window";
+import {applySceneManager} from "./scene-manager";
 
 /**
  * Applies boot modifications to RPG Maker's core systems for Ludens compatibility.
@@ -16,6 +18,9 @@ import {SafeParameters} from "@jstls/types/core";
  * - Encodes image filenames in non-NWjs environments.
  */
 export function applyBoot() {
+  applyWindow();
+  applySceneManager();
+
   const fontLoadingFunctionKey = "_setupCssFontLoading",
     isMV = Utils.RPGMAKER_NAME == "MV";
 

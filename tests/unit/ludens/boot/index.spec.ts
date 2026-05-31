@@ -73,4 +73,34 @@ describe('Ludens Boot Module', () => {
     const value = global.Bitmap.load('img/pictures/My File.png');
     expect(value).toBe('img/pictures/My File.png');
   });
+
+  it('registers window.onerror and hooks SceneManager on boot', () => {
+    const mockCatchException = vi.fn();
+    global.SceneManager = {
+      catchException: mockCatchException
+    };
+
+    global.window.LudensErrorRegistered = false;
+
+    applyBoot();
+
+    expect(global.window.LudensErrorRegistered).toBe(true);
+    expect(typeof global.window.onerror).toBe('function');
+
+    const mockCallNative = vi.fn();
+    global.window.LudensBridge = {
+      callNative: mockCallNative
+    };
+
+    const testError = new Error('Engine crash');
+    testError.stack = 'Crash Stack';
+
+    global.SceneManager.catchException(testError);
+
+    expect(mockCallNative).toHaveBeenCalledTimes(1);
+    expect(mockCallNative).toHaveBeenCalledWith(
+      'GameError',
+      expect.stringContaining('Engine crash')
+    );
+  });
 });
