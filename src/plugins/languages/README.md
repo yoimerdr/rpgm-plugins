@@ -14,12 +14,6 @@ switch images based on the selected language.
   extraction features.
 - **Translation Tags**: Supports escape tags (`\\L[KEY]`) and wrapping tags (`{L}...{/L}`, `[L]...[/L]`, `<L>...</L>`) with nested-tag handling.
 
-## What's New in 1.1.1
-
-- Fixed wrapping-tag matching for multiline text.
-- Fixed wrapping-tag cleanup behavior in default-language content.
-- Added support for nested wrapping tags in translation flows.
-- Improved internal custom-text processing logic.
 
 ## Usage
 
